@@ -32,6 +32,7 @@ const VALID_MEDIA_TYPES = [MEDIA_TYPE_VIDEO, MEDIA_TYPE_IMAGE];
 
 const DESTINATION_YOUTUBE   = 'youtube';
 const DESTINATION_INSTAGRAM = 'instagram';
+const DESTINATION_TWITTER = 'twitter';
 
 const AppContainer = ({ children }) => {
   return (
@@ -76,7 +77,7 @@ const DestinationsSelector = ({ selectedDestinations, onSelectDestination }) => 
       <Col>
         <p>Select Destinations</p>
         <Button
-          color="secondary"
+          color="primary"
           outline={!includes(selectedDestinations, DESTINATION_YOUTUBE)}
           onClick={() => onSelectDestination(DESTINATION_YOUTUBE)}
         >
@@ -84,11 +85,19 @@ const DestinationsSelector = ({ selectedDestinations, onSelectDestination }) => 
         </Button>
         {' '}
         <Button
-          color="secondary"
+          color="primary"
           outline={!includes(selectedDestinations, DESTINATION_INSTAGRAM)}
           onClick={() => onSelectDestination(DESTINATION_INSTAGRAM)}
         >
           Instagram
+        </Button>
+        {' '}
+        <Button
+          color="primary"
+          outline={!includes(selectedDestinations, DESTINATION_TWITTER)}
+          onClick={() => onSelectDestination(DESTINATION_TWITTER)}
+        >
+          Twitter
         </Button>
       </Col>
     </Row>
@@ -103,11 +112,9 @@ const PayloadPreview = ({ payload }) => (
           <CardTitle tag="h5">
             Payload Preview
           </CardTitle>
-          <CardText>
-            <pre>
-              {JSON.stringify(payload, null, 2)}
-            </pre>
-          </CardText>
+          <pre>
+            {JSON.stringify(payload, null, 2)}
+          </pre>
         </CardBody>
       </Card>
     </Col>
