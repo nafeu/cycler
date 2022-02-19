@@ -1,0 +1,18 @@
+body {
+  font-family: 'Roboto Mono', sans-serif;
+  background-color: #f7f1e3;
+  color: #2c2c54;
+  margin: 2rem;
+}
+
+input {
+  font-family: 'Roboto Mono', sans-serif;
+}
+
+a {
+  color: inherit; /* blue colors for links too */
+}
+
+.thin {
+  font-weight: 100;
+}

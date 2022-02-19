@@ -1,0 +1,44 @@
+{
+  "name": "cycler",
+  "version": "0.0.1",
+  "description": "Mixed media crossposting tools.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./client/node_modules/.bin/jest",
+    "dev": "./node_modules/.bin/nodemon --ignore 'client/' --exec ./node_modules/.bin/babel-node ./server",
+    "build": "./node_modules/.bin/babel -d ./dist ./server && cd client && npm run build && cd .. && mkdir dist/client dist/client/build && cp -rf client/build dist/client",
+    "prebuild": "rm -rf dist/* client/build/* && npm run test",
+    "start": "node ./dist/index.js",
+    "postinstall": "cd client && npm install",
+    "deploy": "git push heroku main"
+  },
+  "keywords": [
+    "youtube",
+    "instagram",
+    "upload",
+    "automation"
+  ],
+  "author": "Nafeu Nasir <nafeu.nasir@gmail.com> (http://nafeu.com/)",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "0.21.0",
+    "cors": "2.8.5",
+    "dotenv": "8.2.0",
+    "express": "4.17.1",
+    "joi": "17.3.0",
+    "lodash": "4.17.20",
+    "morgan": "1.10.0",
+    "regenerator-runtime": "0.13.7"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.12.1",
+    "@babel/core": "7.12.3",
+    "@babel/node": "7.12.6",
+    "@babel/preset-env": "7.12.1",
+    "nodemon": "2.0.6"
+  },
+  "engines": {
+    "node": "14.8.0"
+  },
+  "proxy": "http://localhost:8000"
+}
