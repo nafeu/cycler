@@ -4,12 +4,13 @@
   "description": "Mixed media crossposting tools.",
   "main": "index.js",
   "scripts": {
-    "test": "./client/node_modules/.bin/jest",
-    "dev": "./node_modules/.bin/nodemon --ignore 'client/' --exec ./node_modules/.bin/babel-node ./server",
-    "build": "./node_modules/.bin/babel -d ./dist ./server && cd client && npm run build && cd .. && mkdir dist/client dist/client/build && cp -rf client/build dist/client",
-    "prebuild": "rm -rf dist/* client/build/* && npm run test",
     "start": "node ./dist/index.js",
-    "postinstall": "cd client && npm install",
+    "prebuild": "rm -rf dist build && mkdir dist",
+    "build": "react-scripts --openssl-legacy-provider build && cp -rf ./build ./dist && ./node_modules/.bin/babel -d ./dist ./server",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "react-scripts --openssl-legacy-provider start",
+    "server": "./node_modules/.bin/nodemon --ignore 'src/' --exec ./node_modules/.bin/babel-node ./server",
+    "dev": "npm-run-all --parallel client server",
     "deploy": "git push heroku main"
   },
   "keywords": [
@@ -25,10 +26,17 @@
     "cors": "2.8.5",
     "dotenv": "8.2.0",
     "express": "4.17.1",
+    "helmet": "^3.18.0",
     "joi": "17.3.0",
     "lodash": "4.17.20",
     "morgan": "1.10.0",
-    "regenerator-runtime": "0.13.7"
+    "regenerator-runtime": "0.13.7",
+    "bootstrap": "^5.1.3",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "react-scripts": "3.0.1",
+    "reactstrap": "^9.0.1",
+    "typeface-roboto-mono": "0.0.75"
   },
   "devDependencies": {
     "@babel/cli": "7.12.1",
@@ -37,8 +45,23 @@
     "@babel/preset-env": "7.12.1",
     "nodemon": "2.0.6"
   },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "engines": {
-    "node": "14.8.0"
+    "node": "17.5.0"
   },
   "proxy": "http://localhost:8000"
 }
