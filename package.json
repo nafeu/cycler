@@ -1,7 +1,7 @@
 {
   "name": "cycler",
   "version": "0.0.1",
-  "description": "Mixed media crossposting tools.",
+  "description": "Multimedia crossposting tools.",
   "main": "index.js",
   "scripts": {
     "start": "node ./dist/index.js",

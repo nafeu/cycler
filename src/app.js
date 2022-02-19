@@ -90,7 +90,7 @@ function App() {
 
   return (
     <Fragment>
-      <h1 className="text-center">Cycler<span className="thin"> Mixed Media Crossposting</span></h1>
+      <h1 className="text-center">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
         <MediaTypeSelector
           selectedMediaType={mediaType}
