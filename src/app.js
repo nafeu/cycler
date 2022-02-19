@@ -4,6 +4,8 @@ import "./index.css";
 
 import axios from "axios";
 
+import { includes, xor } from "lodash";
+
 import {
   Container,
   Row,
@@ -14,12 +16,22 @@ import {
   Card,
   CardBody,
   CardTitle,
-  CardText
+  CardText,
+  Button
 } from 'reactstrap';
 
 const DEFAULT_PAYLOAD = {
-  mediaType: null
+  mediaType: null,
+  destinations: []
 }
+
+const MEDIA_TYPE_VIDEO = 'video';
+const MEDIA_TYPE_IMAGE = 'image';
+
+const VALID_MEDIA_TYPES = [MEDIA_TYPE_VIDEO, MEDIA_TYPE_IMAGE];
+
+const DESTINATION_YOUTUBE   = 'youtube';
+const DESTINATION_INSTAGRAM = 'instagram';
 
 const AppContainer = ({ children }) => {
   return (
@@ -35,28 +47,51 @@ const AppContainer = ({ children }) => {
 
 const MediaTypeSelector = ({ selectedMediaType, onSelectMediaType }) => {
   return (
-    <FormGroup>
-      <Label for="media-type-selector">
-        Select Media Type
-      </Label>
-      <Input
-        id="media-type-selector"
-        name="select"
-        type="select"
-        value={selectedMediaType}
-        onChange={event => onSelectMediaType(event.target.value)}
-      >
-        <option value="">
-          Please select a media type.
-        </option>
-        <option value="video">
+    <Row className="mb-3">
+      <Col>
+        <p>Select Media Type</p>
+        <Button
+          color="primary"
+          outline={selectedMediaType !== MEDIA_TYPE_VIDEO}
+          onClick={() => onSelectMediaType(MEDIA_TYPE_VIDEO)}
+        >
           Video
-        </option>
-        <option value="image">
+        </Button>
+        {' '}
+        <Button
+          color="primary"
+          outline={selectedMediaType !== MEDIA_TYPE_IMAGE}
+          onClick={() => onSelectMediaType(MEDIA_TYPE_IMAGE)}
+        >
           Image
-        </option>
-      </Input>
-    </FormGroup>
+        </Button>
+      </Col>
+    </Row>
+  )
+}
+
+const DestinationsSelector = ({ selectedDestinations, onSelectDestination }) => {
+  return (
+    <Row className="mb-3">
+      <Col>
+        <p>Select Destinations</p>
+        <Button
+          color="secondary"
+          outline={!includes(selectedDestinations, DESTINATION_YOUTUBE)}
+          onClick={() => onSelectDestination(DESTINATION_YOUTUBE)}
+        >
+          Youtube
+        </Button>
+        {' '}
+        <Button
+          color="secondary"
+          outline={!includes(selectedDestinations, DESTINATION_INSTAGRAM)}
+          onClick={() => onSelectDestination(DESTINATION_INSTAGRAM)}
+        >
+          Instagram
+        </Button>
+      </Col>
+    </Row>
   )
 }
 
@@ -86,7 +121,16 @@ function App() {
     setPayload({ ...payload, mediaType });
   }
 
-  const { mediaType } = payload;
+  const handleSelectDestination = destination => {
+    setPayload({
+      ...payload,
+      destinations: xor(payload.destinations, [destination])
+    });
+  }
+
+  const { mediaType, destinations } = payload;
+
+  const isValidMediaType = includes(VALID_MEDIA_TYPES, mediaType);
 
   return (
     <Fragment>
@@ -96,6 +140,13 @@ function App() {
           selectedMediaType={mediaType}
           onSelectMediaType={handleSelectMediaType}
         />
+
+        {isValidMediaType && (
+          <DestinationsSelector
+            selectedDestinations={destinations}
+            onSelectDestination={handleSelectDestination}
+          />
+        )}
       </AppContainer>
       <PayloadPreview payload={payload}/>
     </Fragment>
