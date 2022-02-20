@@ -9,6 +9,7 @@ import DestinationsSelector from './components/DestinationsSelector';
 import MediaTypeSelector from './components/MediaTypeSelector';
 import PayloadPreview from './components/PayloadPreview';
 import VideoUploader from './components/VideoUploader';
+import AlertMessage from './components/AlertMessage';
 
 import {
   DEFAULT_PAYLOAD,
@@ -19,6 +20,7 @@ import {
 
 function App() {
   const [payload, setPayload] = useState(DEFAULT_PAYLOAD);
+  const [alert, setAlert]     = useState(null)
 
   const handleSelectMediaType = mediaType => {
     setPayload({ ...payload, mediaType });
@@ -31,12 +33,25 @@ function App() {
     });
   }
 
+  const handleUploadSuccess = downloadUrl => {
+    setPayload({
+      ...payload,
+      downloadUrl
+    });
+    setAlert({ message: 'File uploaded successfully.', link: downloadUrl , color: 'success' })
+  }
+
+  const handleUploadError = error => {
+    setAlert({ message: error.message, color: 'danger' })
+  }
+
   const { mediaType, destinations } = payload;
 
   const isValidMediaType = includes(VALID_MEDIA_TYPES, mediaType);
   const isVideo = mediaType === MEDIA_TYPE_VIDEO;
   const isImage = mediaType === MEDIA_TYPE_IMAGE;
   const hasDestination = destinations.length > 0;
+  const hasAlert = alert !== null
 
   return (
     <Fragment>
@@ -57,13 +72,20 @@ function App() {
             {hasDestination && (
               <Fragment>
                 {isVideo && (
-                  <VideoUploader />
+                  <VideoUploader
+                    onUploadError={handleUploadError}
+                    onUploadSuccess={handleUploadSuccess}
+                  />
                 )}
               </Fragment>
             )}
           </Fragment>
         )}
       </AppContainer>
+      <AlertMessage
+        data={alert}
+        showAlert={hasAlert}
+      />
       <PayloadPreview payload={payload}/>
     </Fragment>
   )

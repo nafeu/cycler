@@ -5,36 +5,73 @@ import { storage } from "../../config/firebase";
 import {
   Row,
   Col,
-  Input
+  Input,
+  Progress,
+  Button,
+  FormGroup
 } from 'reactstrap';
 
-const VideoUploader = () => {
-  const [progress, setProgress] = useState(0);
+import { FIRST_ITEM, EVENT_STATE_CHANGED } from '../../utils/constants';
 
-  const formHandler = (e) => {
-    e.preventDefault();
-    const file = e.target[0].files[0];
+const getProgressPercentage = snapshot => Math.round(
+  (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+)
+
+const getDownloadUrlAsync = snapshotRef => new Promise((resolve, reject) => {
+  try {
+    getDownloadURL(snapshotRef).then(downloadURL => {
+      if (downloadURL) {
+        resolve({ downloadURL })
+      } else {
+        reject({ error: { message: 'Missing download URL.' } })
+      }
+    });
+  } catch (error) {
+    reject(error);
+  }
+});
+
+const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
+  const [progress, setProgress]       = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewURL, setPreviewURL]   = useState(null);
+
+  const hasProgress = progress > 0;
+  const completed   = !isUploading && progress >= 100;
+
+  const handleSnapshot = snapshot => {
+    setProgress(getProgressPercentage(snapshot));
+  }
+
+  const formHandler = event => {
+    event.preventDefault();
+    const file = event.target[FIRST_ITEM].files[FIRST_ITEM];
     uploadFiles(file);
   };
 
-  const uploadFiles = (file) => {
+  const uploadFiles = file => {
     if (!file) return;
-    const storageRef = ref(storage, `files/${file.name}`);
+    const storageRef = ref(storage, `videos/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
+    setIsUploading(true);
+
     uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const prog = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgress(prog);
-      },
-      (error) => console.log(error),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
-        });
+      EVENT_STATE_CHANGED,
+      handleSnapshot,
+      onUploadError,
+      async () => {
+        const snapshotRef = uploadTask.snapshot.ref;
+        const { downloadURL, error } = await getDownloadUrlAsync(snapshotRef);
+
+        setIsUploading(false);
+
+        if (error) {
+          onUploadError(error);
+        } else {
+          setPreviewURL(downloadURL);
+          onUploadSuccess(downloadURL);
+        }
       }
     );
   };
@@ -43,11 +80,29 @@ const VideoUploader = () => {
     <Row className="mb-3">
       <Col>
         <form onSubmit={formHandler}>
-          <input type="file" className="input" />
-          <button type="submit">Upload</button>
+          <FormGroup className="mb-3">
+            <Input
+              name="file"
+              type="file"
+              accept="videos/*"
+            />
+            {' '}
+            <Button color="primary" type="submit">Upload</Button>
+          </FormGroup>
         </form>
-        <hr />
-        <h2>Uploading done {progress}%</h2>
+        {hasProgress && (
+          <Progress
+            animated={isUploading}
+            color={completed ? 'success' : 'info'}
+            value={progress}
+          />
+        )}
+        {completed && previewURL && (
+          <video width="320" height="240" controls>
+             <source src={previewURL} />
+             Your browser does not support the video tag.
+          </video>
+        )}
       </Col>
     </Row>
   )
