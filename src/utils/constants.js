@@ -1,7 +1,8 @@
 export const DEFAULT_PAYLOAD = {
   mediaType: null,
   destinations: [],
-  strategies: []
+  strategies: [],
+  file: {}
 }
 
 export const MEDIA_TYPE_VIDEO = 'video';

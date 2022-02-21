@@ -8,7 +8,7 @@ import AppContainer from './components/AppContainer';
 import DestinationsSelector from './components/DestinationsSelector';
 import MediaTypeSelector from './components/MediaTypeSelector';
 import PayloadPreview from './components/PayloadPreview';
-import VideoUploader from './components/VideoUploader';
+import CloudVideoUploader from './components/CloudVideoUploader';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
 
@@ -41,14 +41,17 @@ function App() {
     });
   }
 
-  const handleUploadSuccess = downloadUrl => {
+  const handleUploadSuccess = cloudUrl => {
     setPayload({
       ...payload,
-      downloadUrl
+      file: {
+        ...payload.file,
+        cloudUrl
+      }
     });
     setAlert({
       message: 'File uploaded to cloud storage successfully.',
-      link: downloadUrl,
+      link: cloudUrl,
       color: 'success'
     });
   }
@@ -105,7 +108,7 @@ function App() {
             {hasDestination && (
               <Fragment>
                 {isInstagramDestination && (
-                  <VideoUploader
+                  <CloudVideoUploader
                     onUploadError={handleUploadError}
                     onUploadSuccess={handleUploadSuccess}
                   />

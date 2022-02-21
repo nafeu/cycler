@@ -20,9 +20,9 @@ const getProgressPercentage = snapshot => Math.round(
 
 const getDownloadUrlAsync = snapshotRef => new Promise((resolve, reject) => {
   try {
-    getDownloadURL(snapshotRef).then(downloadURL => {
-      if (downloadURL) {
-        resolve({ downloadURL })
+    getDownloadURL(snapshotRef).then(downloadUrl => {
+      if (downloadUrl) {
+        resolve({ downloadUrl })
       } else {
         reject({ error: { message: 'Missing download URL.' } })
       }
@@ -32,7 +32,7 @@ const getDownloadUrlAsync = snapshotRef => new Promise((resolve, reject) => {
   }
 });
 
-const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
+const CloudVideoUploader = ({ onUploadError, onUploadSuccess }) => {
   const [progress, setProgress]       = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [previewURL, setPreviewURL]   = useState(null);
@@ -63,15 +63,15 @@ const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
       onUploadError,
       async () => {
         const snapshotRef = uploadTask.snapshot.ref;
-        const { downloadURL, error } = await getDownloadUrlAsync(snapshotRef);
+        const { downloadUrl, error } = await getDownloadUrlAsync(snapshotRef);
 
         setIsUploading(false);
 
         if (error) {
           onUploadError(error);
         } else {
-          setPreviewURL(downloadURL);
-          onUploadSuccess(downloadURL);
+          setPreviewURL(downloadUrl);
+          onUploadSuccess(downloadUrl);
         }
       }
     );
@@ -80,7 +80,7 @@ const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Select Media</h4>
+        <h4>Select Cloud Media</h4>
         <form onSubmit={formHandler}>
           <FormGroup className="mb-3">
             <Input
@@ -116,4 +116,4 @@ const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
   )
 }
 
-export default VideoUploader
+export default CloudVideoUploader
