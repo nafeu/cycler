@@ -1,5 +1,4 @@
 import React from "react";
-import { includes } from "lodash";
 
 import {
   Row,
@@ -79,7 +78,7 @@ const CheckboxField = ({
 }
 
 const YoutubeStrategy = ({ onChangeField, payload }) => {
-  const strategyId = 'youtube';
+  const strategyId = YOUTUBE_STRATEGY_ID;
 
   return (
     <Row className="mb-3">

@@ -1,4 +1,4 @@
-import { includes, filter, find } from 'lodash';
+import { filter, find } from 'lodash';
 
 export const getStrategiesDefault = ({ destination, strategies }) => {
   const existingStrategy = find(strategies, { id: destination })

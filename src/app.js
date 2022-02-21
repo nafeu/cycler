@@ -9,13 +9,12 @@ import DestinationsSelector from './components/DestinationsSelector';
 import MediaTypeSelector from './components/MediaTypeSelector';
 import PayloadPreview from './components/PayloadPreview';
 import CloudVideoUploader from './components/CloudVideoUploader';
+import LocalVideoUploader from './components/LocalVideoUploader';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
 
 import {
   DEFAULT_PAYLOAD,
-  MEDIA_TYPE_VIDEO,
-  MEDIA_TYPE_IMAGE,
   VALID_MEDIA_TYPES,
   YOUTUBE_STRATEGY_ID,
   INSTAGRAM_STRATEGY_ID
@@ -79,11 +78,19 @@ function App() {
     })
   }
 
+  const handleSelectLocalMedia = localPath => {
+    setPayload({
+      ...payload,
+      file: {
+        ...payload.file,
+        localPath
+      }
+    });
+  }
+
   const { mediaType, destinations } = payload;
 
   const isValidMediaType = includes(VALID_MEDIA_TYPES, mediaType);
-  const isVideo = mediaType === MEDIA_TYPE_VIDEO;
-  const isImage = mediaType === MEDIA_TYPE_IMAGE;
   const hasDestination = destinations.length > 0;
   const hasAlert = alert !== null;
   const isYoutubeDestination = includes(destinations, YOUTUBE_STRATEGY_ID);
@@ -111,6 +118,13 @@ function App() {
                   <CloudVideoUploader
                     onUploadError={handleUploadError}
                     onUploadSuccess={handleUploadSuccess}
+                  />
+                )}
+
+                {isYoutubeDestination && (
+                  <LocalVideoUploader
+                    onSelectVideo={handleSelectLocalMedia}
+                    payload={payload}
                   />
                 )}
 

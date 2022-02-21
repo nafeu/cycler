@@ -6,6 +6,13 @@ import helmet from "helmet";
 import { join, resolve } from "path";
 import 'dotenv/config';
 import regeneratorRuntime from "regenerator-runtime";
+import fs from "fs";
+
+import { MEDIA_DIRECTORY } from './constants';
+
+if (!fs.existsSync(MEDIA_DIRECTORY)){
+  fs.mkdirSync(MEDIA_DIRECTORY);
+}
 
 import api from './api/v1';
 
