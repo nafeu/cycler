@@ -8,36 +8,36 @@ import {
 } from 'reactstrap';
 
 import {
-  DESTINATION_YOUTUBE,
-  DESTINATION_INSTAGRAM,
-  DESTINATION_TWITTER,
+  YOUTUBE_STRATEGY_ID,
+  INSTAGRAM_STRATEGY_ID,
+  TWITTER_STRATEGY_ID,
 } from '../../utils/constants';
 
 const DestinationsSelector = ({ selectedDestinations, onSelectDestination }) => {
   return (
     <Row className="mb-3">
       <Col>
-        <p>Select Destinations</p>
+        <h4>Select Destinations</h4>
         <Button
           color="primary"
-          outline={!includes(selectedDestinations, DESTINATION_YOUTUBE)}
-          onClick={() => onSelectDestination(DESTINATION_YOUTUBE)}
+          outline={!includes(selectedDestinations, YOUTUBE_STRATEGY_ID)}
+          onClick={() => onSelectDestination(YOUTUBE_STRATEGY_ID)}
         >
           Youtube
         </Button>
         {' '}
         <Button
           color="primary"
-          outline={!includes(selectedDestinations, DESTINATION_INSTAGRAM)}
-          onClick={() => onSelectDestination(DESTINATION_INSTAGRAM)}
+          outline={!includes(selectedDestinations, INSTAGRAM_STRATEGY_ID)}
+          onClick={() => onSelectDestination(INSTAGRAM_STRATEGY_ID)}
         >
           Instagram
         </Button>
         {' '}
         <Button
           color="primary"
-          outline={!includes(selectedDestinations, DESTINATION_TWITTER)}
-          onClick={() => onSelectDestination(DESTINATION_TWITTER)}
+          outline={!includes(selectedDestinations, TWITTER_STRATEGY_ID)}
+          onClick={() => onSelectDestination(TWITTER_STRATEGY_ID)}
         >
           Twitter
         </Button>

@@ -9,8 +9,7 @@ import {
   Input,
   Progress,
   Button,
-  FormGroup,
-  Spinner
+  FormGroup
 } from 'reactstrap';
 
 import { FIRST_ITEM, EVENT_STATE_CHANGED } from '../../utils/constants';
@@ -81,7 +80,7 @@ const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
   return (
     <Row className="mb-3">
       <Col>
-        <p>Select Media</p>
+        <h4>Select Media</h4>
         <form onSubmit={formHandler}>
           <FormGroup className="mb-3">
             <Input

@@ -15,7 +15,7 @@ const MediaTypeSelector = ({ selectedMediaType, onSelectMediaType }) => {
   return (
     <Row className="mb-3">
       <Col>
-        <p>Select Media Type</p>
+        <h4>Select Media Type</h4>
         <Button
           color="primary"
           outline={selectedMediaType !== MEDIA_TYPE_VIDEO}

@@ -2,7 +2,7 @@ import React, { useState, Fragment } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./index.css";
 
-import { includes, xor } from "lodash";
+import { includes, xor, map } from "lodash";
 
 import AppContainer from './components/AppContainer';
 import DestinationsSelector from './components/DestinationsSelector';
@@ -10,13 +10,20 @@ import MediaTypeSelector from './components/MediaTypeSelector';
 import PayloadPreview from './components/PayloadPreview';
 import VideoUploader from './components/VideoUploader';
 import AlertMessage from './components/AlertMessage';
+import YoutubeStrategy from './components/YoutubeStrategy';
 
 import {
   DEFAULT_PAYLOAD,
   MEDIA_TYPE_VIDEO,
   MEDIA_TYPE_IMAGE,
   VALID_MEDIA_TYPES,
+  YOUTUBE_STRATEGY_ID,
+  INSTAGRAM_STRATEGY_ID
 } from './utils/constants';
+
+import {
+  getStrategiesDefault
+} from './utils/helpers';
 
 function App() {
   const [payload, setPayload] = useState(DEFAULT_PAYLOAD);
@@ -29,7 +36,8 @@ function App() {
   const handleSelectDestination = destination => {
     setPayload({
       ...payload,
-      destinations: xor(payload.destinations, [destination])
+      destinations: xor(payload.destinations, [destination]),
+      strategies: getStrategiesDefault({ destination, strategies: payload.strategies })
     });
   }
 
@@ -38,11 +46,34 @@ function App() {
       ...payload,
       downloadUrl
     });
-    setAlert({ message: 'File uploaded to cloud storage successfully.', link: downloadUrl , color: 'success' })
+    setAlert({
+      message: 'File uploaded to cloud storage successfully.',
+      link: downloadUrl,
+      color: 'success'
+    });
   }
 
   const handleUploadError = error => {
     setAlert({ message: error.message, color: 'danger' })
+  }
+
+  const handleChangeField = ({ value, fieldId, strategyId }) => {
+    setPayload({
+      ...payload,
+      strategies: map(payload.strategies, strategy => {
+        if (strategy.id === strategyId) {
+          return {
+            ...strategy,
+            fields: {
+              ...strategy.fields,
+              [fieldId]: value
+            }
+          }
+        }
+
+        return strategy;
+      })
+    })
   }
 
   const { mediaType, destinations } = payload;
@@ -52,6 +83,8 @@ function App() {
   const isImage = mediaType === MEDIA_TYPE_IMAGE;
   const hasDestination = destinations.length > 0;
   const hasAlert = alert !== null;
+  const isYoutubeDestination = includes(destinations, YOUTUBE_STRATEGY_ID);
+  const isInstagramDestination = includes(destinations, INSTAGRAM_STRATEGY_ID);
 
   return (
     <Fragment>
@@ -71,10 +104,17 @@ function App() {
 
             {hasDestination && (
               <Fragment>
-                {isVideo && (
+                {isInstagramDestination && (
                   <VideoUploader
                     onUploadError={handleUploadError}
                     onUploadSuccess={handleUploadSuccess}
+                  />
+                )}
+
+                {isYoutubeDestination && (
+                  <YoutubeStrategy
+                    onChangeField={handleChangeField}
+                    payload={payload}
                   />
                 )}
               </Fragment>

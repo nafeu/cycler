@@ -1,13 +1,17 @@
-export const DEFAULT_PAYLOAD = {
-  mediaType: null,
-  destinations: []
+import { includes, filter, find } from 'lodash';
+
+export const getStrategiesDefault = ({ destination, strategies }) => {
+  const existingStrategy = find(strategies, { id: destination })
+
+  if (existingStrategy) {
+    return filter(strategies, ({ id }) => id !== destination);
+  }
+
+  return [...strategies, { id: destination, fields: {} }]
 }
 
-export const MEDIA_TYPE_VIDEO = 'video';
-export const MEDIA_TYPE_IMAGE = 'image';
+export const getStrategyFieldValue = ({ payload, strategyId, fieldId }) => {
+  const strategy = find(payload.strategies, { id: strategyId });
 
-export const VALID_MEDIA_TYPES = [MEDIA_TYPE_VIDEO, MEDIA_TYPE_IMAGE];
-
-export const DESTINATION_YOUTUBE   = 'youtube';
-export const DESTINATION_INSTAGRAM = 'instagram';
-export const DESTINATION_TWITTER = 'twitter';
+  return strategy[fieldId];
+}
