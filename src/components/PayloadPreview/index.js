@@ -10,7 +10,7 @@ import {
 
 const PayloadPreview = ({ payload }) => (
   <Row className="justify-content-center">
-    <Col xl={5}>
+    <Col xl={8}>
       <Card>
         <CardBody>
           <CardTitle tag="h5">

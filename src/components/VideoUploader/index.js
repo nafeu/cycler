@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../../config/firebase";
+import './index.css';
 
 import {
   Row,
@@ -8,7 +9,8 @@ import {
   Input,
   Progress,
   Button,
-  FormGroup
+  FormGroup,
+  Spinner
 } from 'reactstrap';
 
 import { FIRST_ITEM, EVENT_STATE_CHANGED } from '../../utils/constants';
@@ -79,15 +81,19 @@ const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
   return (
     <Row className="mb-3">
       <Col>
+        <p>Select Media</p>
         <form onSubmit={formHandler}>
           <FormGroup className="mb-3">
             <Input
               name="file"
               type="file"
               accept="videos/*"
+              className="video-input"
             />
             {' '}
-            <Button color="primary" type="submit">Upload</Button>
+            <Button color="primary" type="submit" disabled={isUploading}>
+              {isUploading ? 'Uploading' : 'Upload'}
+            </Button>
           </FormGroup>
         </form>
         {hasProgress && (
@@ -95,13 +101,16 @@ const VideoUploader = ({ onUploadError, onUploadSuccess }) => {
             animated={isUploading}
             color={completed ? 'success' : 'info'}
             value={progress}
+            className="mb-3"
           />
         )}
         {completed && previewURL && (
-          <video width="320" height="240" controls>
-             <source src={previewURL} />
-             Your browser does not support the video tag.
-          </video>
+          <Row className="justify-content-center">
+            <video width="320" height="240" controls>
+               <source src={previewURL} />
+               Your browser does not support the video tag.
+            </video>
+          </Row>
         )}
       </Col>
     </Row>

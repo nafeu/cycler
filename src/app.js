@@ -38,7 +38,7 @@ function App() {
       ...payload,
       downloadUrl
     });
-    setAlert({ message: 'File uploaded successfully.', link: downloadUrl , color: 'success' })
+    setAlert({ message: 'File uploaded to cloud storage successfully.', link: downloadUrl , color: 'success' })
   }
 
   const handleUploadError = error => {
@@ -51,11 +51,11 @@ function App() {
   const isVideo = mediaType === MEDIA_TYPE_VIDEO;
   const isImage = mediaType === MEDIA_TYPE_IMAGE;
   const hasDestination = destinations.length > 0;
-  const hasAlert = alert !== null
+  const hasAlert = alert !== null;
 
   return (
     <Fragment>
-      <h1 className="text-center">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
+      <h1 className="text-center mb-4">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
         <MediaTypeSelector
           selectedMediaType={mediaType}
