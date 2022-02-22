@@ -1,7 +1,7 @@
 body {
   font-family: 'Roboto Mono', sans-serif;
-  background-color: #f7f1e3;
-  color: #2c2c54;
+  background-color: #1B1464;
+  color: #12CBC4;
   margin: 2rem;
 }
 
@@ -18,8 +18,8 @@ a {
 }
 
 .btn-outline-primary {
-  color: #2c2c54;
-  border-color: #2c2c54;
+  color: #12CBC4;
+  border-color: #12CBC4;
 }
 
 .btn-primary,
@@ -27,12 +27,17 @@ a {
 .btn-primary:hover,
 .btn-primary:active,
 .btn-outline-primary:hover {
-  background-color: #2c2c54;
-  border-color: #2c2c54;
-  color: #f7f1e3;
+  background-color: #12CBC4;
+  border-color: #12CBC4;
+  color: #1B1464;
 }
 
 .btn:focus {
   outline: none;
   box-shadow: none;
+}
+
+.card {
+  background-color: #12CBC4;
+  color: #1B1464;
 }

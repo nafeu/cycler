@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./index.css";
 
 import { includes, xor, map } from "lodash";
+import axios from "axios";
 
 import AppContainer from './components/AppContainer';
 import DestinationsSelector from './components/DestinationsSelector';
@@ -12,6 +13,7 @@ import CloudVideoUploader from './components/CloudVideoUploader';
 import LocalVideoUploader from './components/LocalVideoUploader';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
+import Publisher from './components/Publisher';
 
 import {
   DEFAULT_PAYLOAD,
@@ -26,7 +28,10 @@ import {
 
 function App() {
   const [payload, setPayload] = useState(DEFAULT_PAYLOAD);
-  const [alert, setAlert]     = useState(null)
+  const [alert, setAlert]     = useState(null);
+
+  const [isPublishing, setIsPublishing]         = useState(false);
+  const [publishingResult, setPublishingResult] = useState({});
 
   const handleSelectMediaType = mediaType => {
     setPayload({ ...payload, mediaType });
@@ -56,7 +61,7 @@ function App() {
   }
 
   const handleUploadError = error => {
-    setAlert({ message: error.message, color: 'danger' })
+    setAlert({ message: error.message, color: 'danger' });
   }
 
   const handleChangeField = ({ value, fieldId, strategyId }) => {
@@ -88,6 +93,17 @@ function App() {
     });
   }
 
+  const handleClickPublish = async () => {
+    try {
+      setIsPublishing(true);
+      const { data } = await axios.post('/api/publish', payload);
+      setPublishingResult(data);
+    } catch (error) {
+      setAlert({ message: error.message, color: 'danger' });
+    }
+    setIsPublishing(false);
+  }
+
   const { mediaType, destinations } = payload;
 
   const isValidMediaType = includes(VALID_MEDIA_TYPES, mediaType);
@@ -95,6 +111,7 @@ function App() {
   const hasAlert = alert !== null;
   const isYoutubeDestination = includes(destinations, YOUTUBE_STRATEGY_ID);
   const isInstagramDestination = includes(destinations, INSTAGRAM_STRATEGY_ID);
+  const canPublish = payload?.file?.downloadUrl || payload?.file?.localPath;
 
   return (
     <Fragment>
@@ -134,16 +151,24 @@ function App() {
                     payload={payload}
                   />
                 )}
+
+                {canPublish && (
+                  <Publisher
+                    onClickPublish={handleClickPublish}
+                    result={publishingResult}
+                    isPublishing={isPublishing}
+                  />
+                )}
               </Fragment>
             )}
+            <AlertMessage
+              data={alert}
+              showAlert={hasAlert}
+            />
+            <PayloadPreview payload={payload}/>
           </Fragment>
         )}
       </AppContainer>
-      <AlertMessage
-        data={alert}
-        showAlert={hasAlert}
-      />
-      <PayloadPreview payload={payload}/>
     </Fragment>
   )
 }
