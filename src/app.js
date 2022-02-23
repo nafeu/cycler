@@ -4,6 +4,7 @@ import "./index.css";
 
 import { includes, xor, map } from "lodash";
 import axios from "axios";
+import { useEffectOnce } from "react-use";
 
 import AppContainer from './components/AppContainer';
 import DestinationsSelector from './components/DestinationsSelector';
@@ -14,6 +15,7 @@ import LocalVideoUploader from './components/LocalVideoUploader';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
 import Publisher from './components/Publisher';
+import Authorizations from './components/Authorizations';
 
 import {
   DEFAULT_PAYLOAD,
@@ -30,8 +32,24 @@ function App() {
   const [payload, setPayload] = useState(DEFAULT_PAYLOAD);
   const [alert, setAlert]     = useState(null);
 
+  const [authorizations, setAuthorizations] = useState([]);
+
   const [isPublishing, setIsPublishing]         = useState(false);
   const [publishingResult, setPublishingResult] = useState({});
+
+  useEffectOnce(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: result } = await axios.get('/api/auth');
+
+        setAuthorizations(result);
+      } catch (error) {
+        setAlert({ message: error.message, color: 'danger' });
+      }
+    }
+
+    checkAuth();
+  })
 
   const handleSelectMediaType = mediaType => {
     setPayload({ ...payload, mediaType });
@@ -117,6 +135,7 @@ function App() {
     <Fragment>
       <h1 className="text-center mb-4">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
+        <Authorizations authorizations={authorizations} />
         <MediaTypeSelector
           selectedMediaType={mediaType}
           onSelectMediaType={handleSelectMediaType}

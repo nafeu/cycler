@@ -9,7 +9,7 @@
     "build": "react-scripts build && cp -rf ./build ./dist && ./node_modules/.bin/babel -d ./dist ./server",
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "react-scripts start",
-    "server": "./node_modules/.bin/nodemon --ignore 'src/' --exec ./node_modules/.bin/babel-node ./server",
+    "server": "./node_modules/.bin/nodemon --ignore 'src/,tokens.json' --exec ./node_modules/.bin/babel-node ./server",
     "dev": "npm-run-all --parallel client server",
     "deploy": "git push heroku main"
   },
@@ -28,6 +28,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.16.4",
     "firebase": "^9.6.7",
+    "googleapis": "^95.0.0",
     "helmet": "^3.18.0",
     "joi": "17.4.0",
     "lodash": "^4.17.21",
@@ -37,6 +38,7 @@
     "react-dom": "^16.8.6",
     "react-scripts": "^3.4.0",
     "react-select": "^5.2.2",
+    "react-use": "^17.3.2",
     "reactstrap": "^8.0.0",
     "regenerator-runtime": "^0.13.7",
     "typeface-roboto-mono": "0.0.75"
