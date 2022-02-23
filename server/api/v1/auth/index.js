@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 
 import { getGoogleAuthUrl, getGoogleTokenFromCode } from '../../../services/google';
 
-const TOKEN_PATH = process.env.TOKEN_PATH || 'tokens.json';
+import { TOKEN_PATH } from '../../../constants';
 
 const exists = async path => {
   try {
@@ -28,7 +28,7 @@ export const getAuth = async (req, res, next) => {
 
     const tokens = JSON.parse(await fs.readFile(TOKEN_PATH, 'utf-8'));
 
-    const isGoogleAuth = !!tokens.google;
+    const isGoogleAuth = !!tokens.google && !tokens.google.error;
 
     authorizations.push({
       id: 'google',

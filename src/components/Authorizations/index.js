@@ -6,13 +6,22 @@ import {
   Card,
   CardBody,
   CardTitle,
-  Button
+  Button,
+  Spinner
 } from 'reactstrap';
 
 const Authorizations = ({ authorizations }) => (
   <Row className="mb-3">
     <Col>
       <h4>Authorize Access</h4>
+      {authorizations.length === 0 && (
+        <Fragment>
+          <Spinner size="sm">
+            {''}
+          </Spinner>
+          {' '}
+        </Fragment>
+      )}
       {authorizations.map(({
         id,
         label,

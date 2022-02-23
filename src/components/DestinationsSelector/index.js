@@ -1,5 +1,5 @@
 import React from "react";
-import { includes } from "lodash";
+import { includes, find } from "lodash";
 
 import {
   Row,
@@ -11,20 +11,27 @@ import {
   YOUTUBE_STRATEGY_ID,
   INSTAGRAM_STRATEGY_ID,
   TWITTER_STRATEGY_ID,
+  GOOGLE_AUTH_ID
 } from '../../utils/constants';
 
-const DestinationsSelector = ({ selectedDestinations, onSelectDestination }) => {
+const DestinationsSelector = ({
+  selectedDestinations,
+  onSelectDestination,
+  authorizations
+}) => {
   return (
     <Row className="mb-3">
       <Col>
         <h4>Select Destinations</h4>
-        <Button
-          color="primary"
-          outline={!includes(selectedDestinations, YOUTUBE_STRATEGY_ID)}
-          onClick={() => onSelectDestination(YOUTUBE_STRATEGY_ID)}
-        >
-          Youtube
-        </Button>
+        {find(authorizations, { id: GOOGLE_AUTH_ID }) && (
+          <Button
+            color="primary"
+            outline={!includes(selectedDestinations, YOUTUBE_STRATEGY_ID)}
+            onClick={() => onSelectDestination(YOUTUBE_STRATEGY_ID)}
+          >
+            Youtube
+          </Button>
+        )}
         {' '}
         <Button
           color="primary"

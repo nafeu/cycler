@@ -146,6 +146,7 @@ function App() {
             <DestinationsSelector
               selectedDestinations={destinations}
               onSelectDestination={handleSelectDestination}
+              authorizations={authorizations}
             />
 
             {hasDestination && (

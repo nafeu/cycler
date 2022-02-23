@@ -4,9 +4,11 @@ import regeneratorRuntime from "regenerator-runtime";
 
 import { uploadYoutubeVideo } from '../../../services/google';
 
-const handleStrategy = async ({ id, fields }) => {
+const handleStrategy = async ({ strategy, file }) => {
+  const { id, fields } = strategy;
+
   if (id === 'youtube') {
-    return uploadYoutubeVideo(fields);
+    return uploadYoutubeVideo({ ...fields, videoPath: `media/${file.localPath}` });
   }
 }
 
@@ -14,20 +16,17 @@ export const postPublish = async (req, res, next) => {
   try {
     const { strategies, file } = req.body;
 
-    // const input = { ...payload };
-    // await schema.validateAsync(input);
-
     const results = [];
 
     for (const strategy of strategies) {
-      const result = handleStrategy(strategy);
+      const result = await handleStrategy({ strategy, file });
+
+      results.push(result);
     }
 
-    // const { data } = await axios.get();
+    console.log({ results });
 
-    setTimeout(() => {
-      res.json({ success: true });
-    }, 2000);
+    res.json({ results });
   } catch (error) {
     next(error);
   }

@@ -9,7 +9,8 @@
     "build": "react-scripts build && cp -rf ./build ./dist && ./node_modules/.bin/babel -d ./dist ./server",
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "react-scripts start",
-    "server": "./node_modules/.bin/nodemon --ignore 'src/,tokens.json' --exec ./node_modules/.bin/babel-node ./server",
+    "server-watch": "./node_modules/.bin/nodemon --ignore 'src/' --exec ./node_modules/.bin/babel-node ./server",
+    "server": "./node_modules/.bin/babel-node ./server",
     "dev": "npm-run-all --parallel client server",
     "deploy": "git push heroku main"
   },
