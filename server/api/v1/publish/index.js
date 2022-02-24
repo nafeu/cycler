@@ -3,12 +3,17 @@ import schema from "./schema";
 import regeneratorRuntime from "regenerator-runtime";
 
 import { uploadYoutubeVideo } from '../../../services/google';
+import { uploadInstagramVideo } from '../../../services/instagram';
 
 const handleStrategy = async ({ strategy, file }) => {
   const { id, fields } = strategy;
 
   if (id === 'youtube') {
     return uploadYoutubeVideo({ ...fields, videoPath: `media/${file.localPath}` });
+  }
+
+  if (id === 'instagram') {
+    return await uploadInstagramVideo({ ...fields, videoPath: `media/${file.localPath}` });
   }
 }
 
@@ -23,8 +28,6 @@ export const postPublish = async (req, res, next) => {
 
       results.push(result);
     }
-
-    console.log({ results });
 
     res.json({ results });
   } catch (error) {

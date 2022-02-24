@@ -31,6 +31,7 @@
     "firebase": "^9.6.7",
     "googleapis": "^95.0.0",
     "helmet": "^3.18.0",
+    "instagram-private-api": "^1.45.3",
     "joi": "17.4.0",
     "lodash": "^4.17.21",
     "morgan": "^1.9.1",

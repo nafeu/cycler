@@ -3,7 +3,9 @@ import schema from "./schema";
 import regeneratorRuntime from "regenerator-runtime";
 import { promises as fs } from 'fs';
 
-import { getGoogleAuthUrl, getGoogleTokenFromCode } from '../../../services/google';
+import { getGoogleAuthUrl, getGoogleTokenFromCode, getYoutubeChannelInfo } from '../../../services/google';
+import { getInstagramAuthUrl } from '../../../services/instagram';
+import { executeShellCommandAsync } from '../../../services/shell';
 
 import { TOKEN_PATH } from '../../../constants';
 
@@ -30,11 +32,28 @@ export const getAuth = async (req, res, next) => {
 
     const isGoogleAuth = !!tokens.google && !tokens.google.error;
 
+    let channelName = null;
+    if (isGoogleAuth) {
+      const channelInfo = await getYoutubeChannelInfo();
+      channelName = channelInfo.items[0]?.snippet?.title || null;
+    }
+
     authorizations.push({
       id: 'google',
-      label: 'Google',
+      label: channelName ? `Google: @${channelName}` : 'Google',
       authorized: isGoogleAuth,
       ...getGoogleAuthUrl()
+    });
+
+    const instagramUsername = process.env.INSTAGRAM_USERNAME;
+    const instagramPassword = process.env.INSTAGRAM_PASSWORD;
+    const isInstagramAuth = instagramUsername && instagramPassword;
+
+    authorizations.push({
+      id: 'instagram',
+      label: instagramUsername ? `Instagram: @${instagramUsername}` : 'Instagram',
+      authorized: isInstagramAuth,
+      ...getInstagramAuthUrl()
     });
 
     res.json(authorizations);
@@ -59,5 +78,15 @@ export const getAuthGoogle = async (req, res, next) => {
     }, 3000);
   } catch (error) {
     res.json({ error })
+  }
+}
+
+export const getAuthEnvEdit = async (req, res, next) => {
+  try {
+    await executeShellCommandAsync(`$EDITOR .env`);
+
+    res.json({ success: true, message: 'Please update your .env accordingly'});
+  } catch (error) {
+    next(error);
   }
 }

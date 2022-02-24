@@ -41,3 +41,8 @@ a {
   background-color: #12CBC4;
   color: #1B1464;
 }
+
+.social-info-header {
+  font-weight: 100;
+  font-size: 0.75em;
+}

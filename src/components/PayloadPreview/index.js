@@ -1,4 +1,5 @@
 import React from "react";
+import './index.css';
 
 import {
   Row,
@@ -16,7 +17,7 @@ const PayloadPreview = ({ payload }) => (
           <CardTitle tag="h5">
             Payload Preview
           </CardTitle>
-          <pre>
+          <pre className="payload-preview-code">
             {JSON.stringify(payload, null, 2)}
           </pre>
         </CardBody>

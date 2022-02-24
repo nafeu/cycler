@@ -10,10 +10,11 @@ import AppContainer from './components/AppContainer';
 import DestinationsSelector from './components/DestinationsSelector';
 import MediaTypeSelector from './components/MediaTypeSelector';
 import PayloadPreview from './components/PayloadPreview';
-import CloudVideoUploader from './components/CloudVideoUploader';
+// import CloudVideoUploader from './components/CloudVideoUploader';
 import LocalVideoUploader from './components/LocalVideoUploader';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
+import InstagramStrategy from './components/InstagramStrategy';
 import Publisher from './components/Publisher';
 import Authorizations from './components/Authorizations';
 
@@ -130,6 +131,7 @@ function App() {
   const isYoutubeDestination = includes(destinations, YOUTUBE_STRATEGY_ID);
   const isInstagramDestination = includes(destinations, INSTAGRAM_STRATEGY_ID);
   const canPublish = payload?.file?.downloadUrl || payload?.file?.localPath;
+  const requiresLocalMedia = isYoutubeDestination || isInstagramDestination;
 
   return (
     <Fragment>
@@ -151,14 +153,14 @@ function App() {
 
             {hasDestination && (
               <Fragment>
-                {isInstagramDestination && (
-                  <CloudVideoUploader
-                    onUploadError={handleUploadError}
-                    onUploadSuccess={handleUploadSuccess}
-                  />
-                )}
+                {/*
+                <CloudVideoUploader
+                  onUploadError={handleUploadError}
+                  onUploadSuccess={handleUploadSuccess}
+                />
+                */}
 
-                {isYoutubeDestination && (
+                {requiresLocalMedia && (
                   <LocalVideoUploader
                     onSelectVideo={handleSelectLocalMedia}
                     payload={payload}
@@ -167,6 +169,13 @@ function App() {
 
                 {isYoutubeDestination && (
                   <YoutubeStrategy
+                    onChangeField={handleChangeField}
+                    payload={payload}
+                  />
+                )}
+
+                {isInstagramDestination && (
+                  <InstagramStrategy
                     onChangeField={handleChangeField}
                     payload={payload}
                   />

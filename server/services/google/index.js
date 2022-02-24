@@ -68,6 +68,23 @@ const uploadYoutubeVideoAsync = ({
   });
 });
 
+const getYoutubeChannelInfoAsync = ({ auth }) => new Promise((resolve, reject) => {
+  const service = google.youtube('v3');
+
+  service.channels.list({
+    auth,
+    part: 'snippet,contentDetails,statistics',
+    mine: true
+  }, (error, response) => {
+    if (error) {
+      reject(error);
+      return;
+    }
+
+    resolve(response);
+  });
+});
+
 export const uploadYoutubeVideo = async ({ title, description, tags, videoPath, categoryId /* thumbnailPath */ }) => {
   try {
     const auth = await getAuthorizedOauth2Client();
@@ -83,6 +100,18 @@ export const uploadYoutubeVideo = async ({ title, description, tags, videoPath, 
     */
 
     return uploadVideoResponse;
+  } catch (error) {
+    console.log(error);
+    return { error }
+  }
+}
+
+export const getYoutubeChannelInfo = async () => {
+  try {
+    const auth = await getAuthorizedOauth2Client();
+    const { data: response } = await getYoutubeChannelInfoAsync({ auth });
+
+    return response;
   } catch (error) {
     console.log(error);
     return { error }
@@ -120,6 +149,8 @@ export const getGoogleAuthUrl = () => {
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: [
+        'https://www.googleapis.com/auth/youtube',
+        'https://www.googleapis.com/auth/youtube.readonly',
         'https://www.googleapis.com/auth/youtube.upload'
       ]
     });
