@@ -9,8 +9,41 @@ import {
   Label,
 } from 'reactstrap';
 
+import Select from 'react-select'
+
 import { getStrategyFieldValue } from '../../utils/helpers';
-import { YOUTUBE_STRATEGY_ID } from '../../utils/constants';
+import { YOUTUBE_STRATEGY_ID, YOUTUBE_VIDEO_CATEGORIES } from '../../utils/constants';
+
+const Categories = ({
+  onChangeCategory,
+  placeholder,
+  label,
+  fieldId,
+  fieldValue,
+  strategyId
+}) => {
+  const handleSelectCategory = ({ value }) => {
+    onChangeCategory({
+      value,
+      fieldId,
+      strategyId
+    });
+  }
+
+  return (
+    <FormGroup row className="mb-2">
+      <Label sm={2} >
+        {label}
+      </Label>
+      <Col sm={10}>
+        <Select
+          options={YOUTUBE_VIDEO_CATEGORIES}
+          onChange={handleSelectCategory}
+        />
+      </Col>
+    </FormGroup>
+  )
+}
 
 const TextField = ({
   onChangeText,
@@ -18,7 +51,9 @@ const TextField = ({
   label,
   fieldId,
   fieldValue,
-  strategyId
+  strategyId,
+  multiline,
+  maxLength
 }) => {
   const handleChangeText = event => {
     onChangeText({
@@ -36,15 +71,17 @@ const TextField = ({
       <Col sm={10}>
         <Input
           placeholder={placeholder}
-          type="text"
+          type={multiline ? "textarea" : "text"}
           onChange={handleChangeText}
           value={fieldValue}
+          maxLength={maxLength}
         />
       </Col>
     </FormGroup>
   )
 }
 
+/*
 const CheckboxField = ({
   onToggleCheckbox,
   label,
@@ -76,6 +113,7 @@ const CheckboxField = ({
     </FormGroup>
   )
 }
+*/
 
 const YoutubeStrategy = ({ onChangeField, payload }) => {
   const strategyId = YOUTUBE_STRATEGY_ID;
@@ -94,6 +132,7 @@ const YoutubeStrategy = ({ onChangeField, payload }) => {
               getStrategyFieldValue({ payload, strategyId, fieldId: "title" })
             }
             onChangeText={onChangeField}
+            maxLength={100}
           />
           <TextField
             strategyId={strategyId}
@@ -104,6 +143,7 @@ const YoutubeStrategy = ({ onChangeField, payload }) => {
               getStrategyFieldValue({ payload, strategyId, fieldId: "description" })
             }
             onChangeText={onChangeField}
+            multiline
           />
           <TextField
             strategyId={strategyId}
@@ -115,16 +155,17 @@ const YoutubeStrategy = ({ onChangeField, payload }) => {
             }
             onChangeText={onChangeField}
           />
-          <TextField
+          <Categories
             strategyId={strategyId}
-            fieldId="categoryIds"
-            label="Category IDs"
+            fieldId="categoryId"
+            label="Category ID"
             placeholder="Enter Category IDs"
             fieldValue={
-              getStrategyFieldValue({ payload, strategyId, fieldId: "categoryIds" })
+              getStrategyFieldValue({ payload, strategyId, fieldId: "categoryId" })
             }
-            onChangeText={onChangeField}
+            onChangeCategory={onChangeField}
           />
+          {/*
           <CheckboxField
             strategyId={strategyId}
             fieldId="privacyStatus"
@@ -134,6 +175,7 @@ const YoutubeStrategy = ({ onChangeField, payload }) => {
             }
             onToggleCheckbox={onChangeField}
           />
+          */}
         </Form>
       </Col>
     </Row>

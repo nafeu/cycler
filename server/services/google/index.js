@@ -3,8 +3,6 @@ import { google } from 'googleapis';
 
 const OAuth2 = google.auth.OAuth2;
 
-const categoryIds = { Entertainment: 24 }
-
 import { TOKEN_PATH } from '../../constants';
 
 const setVideoThumbnailAsync = ({
@@ -35,7 +33,8 @@ const uploadYoutubeVideoAsync = ({
   description,
   tags,
   videoPath,
-  auth
+  auth,
+  categoryId
 }) => new Promise((resolve, reject) => {
   const service = google.youtube('v3');
 
@@ -47,12 +46,13 @@ const uploadYoutubeVideoAsync = ({
         title,
         description,
         tags,
-        categoryId: categoryIds.Entertainment,
+        categoryId,
         defaultLanguage: 'en',
         defaultAudioLanguage: 'en'
       },
       status: {
-        privacyStatus: "private"
+        privacyStatus: "private",
+        selfDeclaredMadeForKids: false
       }
     },
     media: {
@@ -68,11 +68,11 @@ const uploadYoutubeVideoAsync = ({
   });
 });
 
-export const uploadYoutubeVideo = async ({ title, description, tags, videoPath, /* thumbnailPath */ }) => {
+export const uploadYoutubeVideo = async ({ title, description, tags, videoPath, categoryId /* thumbnailPath */ }) => {
   try {
     const auth = await getAuthorizedOauth2Client();
 
-    const { data: uploadVideoResponse } = await uploadYoutubeVideoAsync({ title, description, tags, videoPath, auth });
+    const { data: uploadVideoResponse } = await uploadYoutubeVideoAsync({ title, description, tags, videoPath, auth, categoryId });
 
     /*
       if (thumbnail) {

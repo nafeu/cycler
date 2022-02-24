@@ -3,9 +3,6 @@ import React, { Fragment } from "react";
 import {
   Row,
   Col,
-  Card,
-  CardBody,
-  CardTitle,
   Button,
   Spinner
 } from 'reactstrap';
