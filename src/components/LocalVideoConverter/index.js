@@ -25,10 +25,10 @@ const LocalVideoConverter = ({ onSelectVideo, onClickConvert, isConverting }) =>
         const { data } = await axios.get('/api/media?omit=mp4');
 
         setAllMedia(
-          map(data.allMedia, ({ path, name, size }) => {
+          map(data.allMedia, ({ path, name, size, dimensions }) => {
             return {
               value: path,
-              label: `${name} (${size})`
+              label: `${name} (${size}, ${dimensions.width} x ${dimensions.height})`
             }
           })
         );
@@ -48,7 +48,7 @@ const LocalVideoConverter = ({ onSelectVideo, onClickConvert, isConverting }) =>
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Convert Local Media For Upload</h4>
+        <h4>Convert Media For Upload</h4>
         <Row>
           <Col>
             <Select

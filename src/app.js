@@ -195,6 +195,8 @@ function App() {
                   <LocalVideoUploader
                     onSelectVideo={handleSelectLocalMedia}
                     payload={payload}
+                    isYoutubeDestination={isYoutubeDestination}
+                    isInstagramDestination={isInstagramDestination}
                   />
                 )}
 

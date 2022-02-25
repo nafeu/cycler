@@ -8,10 +8,11 @@ import './index.css';
 import {
   Row,
   Col,
-  Button
+  Button,
+  List
 } from 'reactstrap';
 
-const LocalVideoUploader = ({ onSelectVideo, payload }) => {
+const LocalVideoUploader = ({ onSelectVideo, payload, isInstagramDestination, isYoutubeDestination }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError]     = useState(false)
   const [allMedia, setAllMedia]   = useState([])
@@ -29,10 +30,10 @@ const LocalVideoUploader = ({ onSelectVideo, payload }) => {
       const { data } = await axios.get('/api/media?allow=mp4');
 
       setAllMedia(
-        map(data.allMedia, ({ path, name, size }) => {
+        map(data.allMedia, ({ path, name, size, dimensions }) => {
           return {
             value: path,
-            label: `${name} (${size})`
+            label: `${name} (${size}, ${dimensions.width} x ${dimensions.height})`
           }
         })
       );
@@ -53,8 +54,19 @@ const LocalVideoUploader = ({ onSelectVideo, payload }) => {
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Select Local Media</h4>
-
+        <h4>Select Video For Upload</h4>
+        {(isInstagramDestination || isYoutubeDestination) && (
+          <List type="unstyled">
+            <ul>
+              {isInstagramDestination && (
+                <li className="text-small"><strong>Instagram:</strong> MP4 (1920 x 1080, 1080 x 1350, 1080 x 1080, 1080 x 608)</li>
+              )}
+              {isYoutubeDestination && (
+                <li className="text-small"><strong>Youtube:</strong> MP4 (1920 x 1080)</li>
+              )}
+            </ul>
+          </List>
+        )}
         <Row>
           <Col>
             <Select

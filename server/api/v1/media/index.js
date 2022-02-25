@@ -3,15 +3,25 @@ import schema from "./schema";
 import regeneratorRuntime from "regenerator-runtime";
 import fs from 'fs';
 import { filter, map, includes } from 'lodash';
+import getVideoDimensions from 'get-video-dimensions';
 
 import { executeShellCommandAsync, getFileInfoFromFolder } from '../../../services/shell';
 
-import { MEDIA_DIRECTORY } from '../../../constants';
+import { MEDIA_DIRECTORY, INVALID_EXTENSIONS } from '../../../constants';
 
+const getVideoDimensionsAsync = path => new Promise((resolve, reject) => {
+  getVideoDimensions(path).then(dimensions => {
+    resolve(dimensions);
+  }, error => {
+    reject(error);
+  });
+});
 
 export const getMedia = async (req, res, next) => {
   try {
     let files = getFileInfoFromFolder(MEDIA_DIRECTORY);
+
+    files = filter(files, ({ extension }) => !includes(INVALID_EXTENSIONS, extension))
 
     if (req.query.allow) {
       const extensions = req.query.allow.split(',');
@@ -29,13 +39,17 @@ export const getMedia = async (req, res, next) => {
       });
     }
 
-    const allMedia = map(files, ({ name, size }) => {
-      return {
-        path: name,
-        name,
-        size
-      }
-    })
+    let allMedia = [];
+    for (const media of files) {
+      const dimensions = await getVideoDimensionsAsync(`media/${media.name}`);
+
+      allMedia.push({
+        path: media.name,
+        name: media.name,
+        size: media.size,
+        dimensions
+      })
+    }
 
     res.json({ allMedia });
   } catch (error) {
