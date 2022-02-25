@@ -3,8 +3,8 @@ import { IgApiClient } from 'instagram-private-api';
 
 const getAuthorizedInstagramClient = async () => {
   const client = new IgApiClient();
-  client.state.generateDevice(process.env.IG_USERNAME);
-  await client.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
+  client.state.generateDevice(process.env.INSTAGRAM_USERNAME);
+  await client.account.login(process.env.INSTAGRAM_USERNAME, process.env.INSTAGRAM_PASSWORD);
 
   return client
 }
@@ -12,11 +12,13 @@ const getAuthorizedInstagramClient = async () => {
 export const uploadInstagramVideo = async ({ caption, videoPath, /* coverPath */ }) => {
   try {
     const instagramClient = await getAuthorizedInstagramClient();
+    const video = await fs.readFile(videoPath)
+    const coverImage = await fs.readFile(`${videoPath.split('.')[0]}.jpg`)
 
-    const result = await ig.publish.video({
-      video: await fs.readFile(videoPath),
-      caption
-      // coverImage: await fs.readFile(coverPath),
+    const result = await instagramClient.publish.video({
+      video,
+      caption,
+      coverImage
     });
 
     return result;
