@@ -6,6 +6,7 @@ import { filter, map, includes } from 'lodash';
 import getVideoDimensions from 'get-video-dimensions';
 
 import { executeShellCommandAsync, getFileInfoFromFolder } from '../../../services/shell';
+import { saveImageAsJpgAsync } from '../../../services/image';
 
 import { MEDIA_DIRECTORY, INVALID_EXTENSIONS } from '../../../constants';
 
@@ -76,10 +77,20 @@ export const postMediaConvert = async (req, res, next) => {
   try {
     const result = await executeShellCommandAsync(
       `cd media && ffmpeg -hide_banner -loglevel error -i "${convertPath}" -vcodec h264 -acodec mp2 "${convertedPathName}"`
-      // `cd media && test -f "${convertPath}" && echo "${convertPath} exists."`
     );
 
     res.json({ result, convertPath });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const postMediaSave = async (req, res, next) => {
+  try {
+    const { path } = req.body;
+    const result = await saveImageAsJpgAsync(path);
+
+    res.json({ result });
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Select from 'react-select'
 import axios from 'axios';
 import { map } from 'lodash';
@@ -56,7 +56,6 @@ const LocalVideoConverter = ({ onSelectVideo, onClickConvert, isConverting }) =>
               onChange={handleSelectOption}
               loading={isLoading}
               disabled={isLoading || isError || isConverting}
-              className="mb-3"
             />
           </Col>
           <Col xs={2}>

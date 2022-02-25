@@ -3,8 +3,7 @@ import React from 'react';
 import {
   FormGroup,
   Label,
-  Col,
-  Input
+  Col
 } from 'reactstrap';
 
 import Select from 'react-select';

@@ -8,10 +8,14 @@ import 'dotenv/config';
 import regeneratorRuntime from "regenerator-runtime";
 import fs from "fs";
 
-import { MEDIA_DIRECTORY } from './constants';
+import { MEDIA_DIRECTORY, TEMP_DIRECTORY } from './constants';
 
 if (!fs.existsSync(MEDIA_DIRECTORY)){
   fs.mkdirSync(MEDIA_DIRECTORY);
+}
+
+if (!fs.existsSync(TEMP_DIRECTORY)){
+  fs.mkdirSync(TEMP_DIRECTORY);
 }
 
 import api from './api/v1';

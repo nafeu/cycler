@@ -13,6 +13,7 @@ import PayloadPreview from './components/PayloadPreview';
 // import CloudVideoUploader from './components/CloudVideoUploader';
 import LocalVideoUploader from './components/LocalVideoUploader';
 import LocalVideoConverter from './components/LocalVideoConverter';
+import LocalThumbnailEditor from './components/LocalThumbnailEditor';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
 import InstagramStrategy from './components/InstagramStrategy';
@@ -67,6 +68,7 @@ function App() {
     });
   }
 
+  /*
   const handleUploadSuccess = cloudUrl => {
     setPayload({
       ...payload,
@@ -85,6 +87,7 @@ function App() {
   const handleUploadError = error => {
     setAlert({ message: error.message, color: 'danger' });
   }
+  */
 
   const handleChangeField = ({ value, fieldId, strategyId }) => {
     setPayload({
@@ -161,6 +164,10 @@ function App() {
     <Fragment>
       <h1 className="text-center mb-4">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
+        <LocalThumbnailEditor
+          setAlert={setAlert}
+        />
+
         <Authorizations authorizations={authorizations} />
         <MediaTypeSelector
           selectedMediaType={mediaType}

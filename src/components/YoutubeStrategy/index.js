@@ -3,10 +3,7 @@ import React from "react";
 import {
   Row,
   Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
+  Form
 } from 'reactstrap';
 
 import SelectField from '../SelectField';

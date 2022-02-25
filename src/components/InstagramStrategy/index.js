@@ -3,13 +3,8 @@ import React from "react";
 import {
   Row,
   Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
+  Form
 } from 'reactstrap';
-
-import Select from 'react-select'
 
 import TextField from '../TextField';
 
