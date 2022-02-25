@@ -7,7 +7,8 @@ import './index.css';
 
 import {
   Row,
-  Col
+  Col,
+  Button
 } from 'reactstrap';
 
 const LocalVideoUploader = ({ onSelectVideo, payload }) => {
@@ -21,27 +22,27 @@ const LocalVideoUploader = ({ onSelectVideo, payload }) => {
     return selectedVideo ? `/api/media/preview?path=${selectedVideo}` : null
   }, [selectedVideo])
 
+  const fetchAllMedia = async () => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const { data } = await axios.get('/api/media?allow=mp4');
+
+      setAllMedia(
+        map(data.allMedia, ({ path, name, size }) => {
+          return {
+            value: path,
+            label: `${name} (${size})`
+          }
+        })
+      );
+    } catch (err) {
+      setIsError(true);
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchAllMedia = async () => {
-      try {
-        setIsLoading(true);
-        setIsError(false);
-        const { data } = await axios.get('/api/media');
-
-        setAllMedia(
-          map(data.allMedia, ({ path, name }) => {
-            return {
-              value: path,
-              label: name
-            }
-          })
-        );
-      } catch (err) {
-        setIsError(true);
-      }
-      setIsLoading(false);
-    };
-
     fetchAllMedia();
   }, []);
 
@@ -53,14 +54,27 @@ const LocalVideoUploader = ({ onSelectVideo, payload }) => {
     <Row className="mb-3">
       <Col>
         <h4>Select Local Media</h4>
-        <Select
-          options={allMedia}
-          onChange={handleSelectOption}
-          loading={isLoading}
-          disabled={isError}
-        />
+        <Row>
+          <Col>
+            <Select
+              options={allMedia}
+              onChange={handleSelectOption}
+              loading={isLoading}
+              disabled={isError}
+            />
+          </Col>
+          <Col xs={2}>
+            <Button
+              color="primary"
+              className="w-100"
+              onClick={() => fetchAllMedia()}
+            >
+              Refresh
+            </Button>
+          </Col>
+        </Row>
         {videoPreviewUrl && (
-          <Row className={`justify-content-center ${videoPreviewUrl ? 'mt-3' : ''}`}>
+          <Row className={`px-2 justify-content-center ${videoPreviewUrl ? 'mt-3' : ''}`}>
             <video width="320" height="240" controls>
                <source src={videoPreviewUrl} />
                Your browser does not support the video tag.

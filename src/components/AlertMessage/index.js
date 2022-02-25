@@ -15,7 +15,7 @@ const AlertMessage = ({ data, showAlert }) => {
 
   return (
     <Row className="justify-content-center">
-      <Col xl={8}>
+      <Col>
         {showAlert && (
           <Alert
             color={color}

@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAuth, getAuthGoogle, getAuthEnvEdit } from "./auth";
-import { getMedia, getMediaPreview } from "./media";
+import { getMedia, getMediaPreview, postMediaConvert } from "./media";
 import { postPublish } from './publish';
 import { getTest } from './test';
 
@@ -14,6 +14,8 @@ api.get("/auth/env/edit", getAuthEnvEdit)
 
 api.get("/media", getMedia);
 api.get("/media/preview", getMediaPreview);
+api.post("/media/convert", postMediaConvert);
+
 api.post("/publish", postPublish);
 
 export default api;

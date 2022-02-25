@@ -12,6 +12,7 @@ import MediaTypeSelector from './components/MediaTypeSelector';
 import PayloadPreview from './components/PayloadPreview';
 // import CloudVideoUploader from './components/CloudVideoUploader';
 import LocalVideoUploader from './components/LocalVideoUploader';
+import LocalVideoConverter from './components/LocalVideoConverter';
 import AlertMessage from './components/AlertMessage';
 import YoutubeStrategy from './components/YoutubeStrategy';
 import InstagramStrategy from './components/InstagramStrategy';
@@ -34,6 +35,8 @@ function App() {
   const [alert, setAlert]     = useState(null);
 
   const [authorizations, setAuthorizations] = useState([]);
+
+  const [isConverting, setIsConverting]         = useState(false);
 
   const [isPublishing, setIsPublishing]         = useState(false);
   const [publishingResult, setPublishingResult] = useState({});
@@ -123,6 +126,27 @@ function App() {
     setIsPublishing(false);
   }
 
+  const handleSelectVideoToConvert = convertPath => {
+    setPayload({
+      ...payload,
+      file: {
+        ...payload.file,
+        convertPath
+      }
+    })
+  }
+
+  const handleClickConvert = async () => {
+    try {
+      setIsConverting(true);
+      const { data: { convertPath } } = await axios.post('/api/media/convert', payload);
+      setAlert({ message: `Video '${convertPath}' was converted successfully.`, color: 'success' });
+    } catch (error) {
+      setAlert({ message: error.message, color: 'danger' });
+    }
+    setIsConverting(false);
+  }
+
   const { mediaType, destinations } = payload;
 
   const isValidMediaType = includes(VALID_MEDIA_TYPES, mediaType);
@@ -159,6 +183,13 @@ function App() {
                   onUploadSuccess={handleUploadSuccess}
                 />
                 */}
+
+                <LocalVideoConverter
+                  onSelectVideo={handleSelectVideoToConvert}
+                  onClickConvert={handleClickConvert}
+                  isConverting={isConverting}
+                  payload={payload}
+                />
 
                 {requiresLocalMedia && (
                   <LocalVideoUploader
