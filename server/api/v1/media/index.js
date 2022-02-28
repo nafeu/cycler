@@ -1,7 +1,7 @@
 import axios from "axios";
 import schema from "./schema";
 import regeneratorRuntime from "regenerator-runtime";
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import { filter, map, includes } from 'lodash';
 import getVideoDimensions from 'get-video-dimensions';
 
@@ -91,6 +91,25 @@ export const postMediaSave = async (req, res, next) => {
     const result = await saveImageAsJpgAsync(path);
 
     res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getMediaThumbs = async (req, res, next) => {
+  try {
+    const { path } = req.query;
+
+    const result = await executeShellCommandAsync(
+      `cd media && ffmpeg -i "${path}" -vf fps=1/20 generated_thumbnail_%03d.jpg`
+    );
+
+    const thumbs = filter(
+      await fs.readdir(MEDIA_DIRECTORY),
+      fileName => includes(fileName, 'generated_thumbnail_')
+    );
+
+    res.json({ thumbs });
   } catch (error) {
     next(error);
   }

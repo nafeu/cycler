@@ -8,7 +8,8 @@ import './index.css';
 import {
   Stage,
   Layer,
-  Image
+  Image,
+  Rect
 } from 'react-konva';
 
 import {
@@ -22,18 +23,25 @@ import {
 import useImage from 'use-image';
 
 const BackgroundImage = ({ imagePath }) => {
-  // TODO: customize
-  const scale = 100;
-
   const [image] = useImage(`/api/media/preview?path=${imagePath}`);
-  return <Image image={image} scaleX={scale / 100} scaleY={scale / 100} />;
+  return <Image
+    image={image}
+    draggable
+  />;
 }
+
+const BackgroundFill = ({ width, height }) => <Rect
+  width={width}
+  height={height}
+  fill="black"
+/>
 
 const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, setAlert }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving]   = useState(false);
   const [isError, setIsError]     = useState(false);
   const [allMedia, setAllMedia]   = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -101,6 +109,14 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
     setIsSaving(false);
   }
 
+  const handleClickEdit = () => {
+    setIsEditing(true);
+  }
+
+  const handleClickDone = () => {
+    setIsEditing(false);
+  }
+
   return (
     <Row className="mb-3">
       <Col>
@@ -136,27 +152,47 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
             </Button>
           </Col>
         </Row>
-        <Row className="mb-3">
-          <Col>
-            <Stage
-              className="konva-container"
-              width={400}
-              height={400}
-              ref={stage}
-            >
-              <Layer>
-                {selectedImage && (
-                  <BackgroundImage
-                    imagePath={selectedImage}
+        {selectedImage && (
+          <Row className="mb-3">
+            <Col>
+              <img src={`/api/media/preview?path=${selectedImage}`} className="preview-img"/>
+            </Col>
+          </Row>
+        )}
+          {isEditing && (
+            <div className="konva-container">
+              <Stage
+                width={1280}
+                height={720}
+                ref={stage}
+                className="konva-stage mb-3"
+              >
+                <Layer>
+                  <BackgroundFill
+                    width={1280}
+                    height={720}
                   />
-                )}
-              </Layer>
-            </Stage>
-          </Col>
-        </Row>
+                  {selectedImage && (
+                    <BackgroundImage
+                      imagePath={selectedImage}
+                    />
+                  )}
+                </Layer>
+              </Stage>
+              <Row>
+                <Col>
+                  <Button
+                    color="primary"
+                    onClick={handleClickDone}
+                  >
+                    Done
+                  </Button>
+                </Col>
+              </Row>
+            </div>
+          )}
         <Button
           color="primary"
-          className="w-100"
           disabled={isSaving}
           onClick={handleClickSave}
         >
@@ -168,6 +204,15 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
             ) : 'Save'
           }
         </Button>
+        {' '}
+        {selectedImage && (
+          <Button
+            color="primary"
+            onClick={handleClickEdit}
+          >
+            Edit
+          </Button>
+        )}
       </Col>
     </Row>
   )

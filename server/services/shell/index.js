@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import path from 'path';
-import fs from 'fs';
+import fsSync, { promises as fs } from 'fs';
 
 const getSizeFromBytes = bytes => {
   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -10,12 +10,12 @@ const getSizeFromBytes = bytes => {
 }
 
 export const getFileInfoFromFolder = route => {
-  const files = fs.readdirSync(route, 'utf8');
+  const files = fsSync.readdirSync(route, 'utf8');
   const response = [];
 
   for (let file of files) {
     const extension = file.split('.').pop();
-    const size = getSizeFromBytes(fs.statSync(`${route}/${file}`).size);
+    const size = getSizeFromBytes(fsSync.statSync(`${route}/${file}`).size);
     response.push({ name: file, extension, size });
   }
 

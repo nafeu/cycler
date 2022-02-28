@@ -13,11 +13,15 @@ import {
 } from 'reactstrap';
 
 const LocalVideoUploader = ({ onSelectVideo, payload, isInstagramDestination, isYoutubeDestination }) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError]     = useState(false)
-  const [allMedia, setAllMedia]   = useState([])
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError]     = useState(false);
+  const [allMedia, setAllMedia]   = useState([]);
+
+  const [isGeneratingThumbs, setIsGeneratingThumbs] = useState(false);
+  const [thumbs, setThumbs]                         = useState([]);
 
   const selectedVideo = payload?.file?.localPath || null
+  const hasThumbs = thumbs.length > 0;
 
   const videoPreviewUrl = useMemo(() => {
     return selectedVideo ? `/api/media/preview?path=${selectedVideo}` : null
@@ -43,11 +47,25 @@ const LocalVideoUploader = ({ onSelectVideo, payload, isInstagramDestination, is
     setIsLoading(false);
   };
 
+  const generateThumbs = async path => {
+    try {
+      setIsGeneratingThumbs(true);
+      setIsError(false);
+      const { data } = await axios.get(`/api/media/thumbs?path=${path}`);
+
+      setThumbs(data.thumbs);
+    } catch (err) {
+      setIsError(true);
+    }
+    setIsGeneratingThumbs(false);
+  }
+
   useEffect(() => {
     fetchAllMedia();
   }, []);
 
   const handleSelectOption = ({ value }) => {
+    generateThumbs(value);
     onSelectVideo(value);
   }
 
@@ -92,6 +110,24 @@ const LocalVideoUploader = ({ onSelectVideo, payload, isInstagramDestination, is
                <source src={videoPreviewUrl} />
                Your browser does not support the video tag.
             </video>
+          </Row>
+        )}
+        {isGeneratingThumbs ? (
+          <p>Generating Thumbnails...</p>
+        ) : (
+          <Row>
+            <Col>
+              {hasThumbs && thumbs.map(thumb => {
+                return (
+                  <div
+                    className="thumb-preview"
+                    style={{
+                      backgroundImage: `url("/api/media/preview?path=${thumb}")`
+                    }}
+                  ></div>
+                );
+              })}
+            </Col>
           </Row>
         )}
       </Col>
