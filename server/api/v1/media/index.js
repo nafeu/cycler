@@ -1,7 +1,7 @@
 import axios from "axios";
 import schema from "./schema";
 import regeneratorRuntime from "regenerator-runtime";
-import { promises as fs } from 'fs';
+import fsSync, { promises as fs } from 'fs';
 import { filter, map, includes } from 'lodash';
 import getVideoDimensions from 'get-video-dimensions';
 
@@ -100,7 +100,13 @@ export const getMediaThumbs = async (req, res, next) => {
   try {
     const { path } = req.query;
 
-    const result = await executeShellCommandAsync(
+    if (fsSync.existsSync(`${MEDIA_DIRECTORY}/generated_thumbnail_1.jpg`)) {
+      await executeShellCommandAsync(
+        `cd media && rm generated_thumbnail_*.jpg`
+      );
+    }
+
+    await executeShellCommandAsync(
       `cd media && ffmpeg -i "${path}" -vf fps=1/20 generated_thumbnail_%03d.jpg`
     );
 

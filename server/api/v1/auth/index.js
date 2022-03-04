@@ -3,7 +3,7 @@ import schema from "./schema";
 import regeneratorRuntime from "regenerator-runtime";
 import { promises as fs } from 'fs';
 
-import { getGoogleAuthUrl, getGoogleTokenFromCode, getYoutubeChannelInfo } from '../../../services/google';
+import { getGoogleAuthUrl, getGoogleTokenFromCode, getYoutubeChannelInfo, refreshGoogleAuth } from '../../../services/google';
 import { getInstagramAuthUrl } from '../../../services/instagram';
 import { executeShellCommandAsync } from '../../../services/shell';
 
@@ -30,9 +30,12 @@ export const getAuth = async (req, res, next) => {
 
     const tokens = JSON.parse(await fs.readFile(TOKEN_PATH, 'utf-8'));
 
-    const isGoogleAuth = !!tokens.google && !tokens.google.error;
+    const isGoogleAuth = !!tokens.google
+      && !tokens.google.error
+      && (tokens.google.token.expiry_date > Date.now());
 
     let channelName = null;
+
     if (isGoogleAuth) {
       const channelInfo = await getYoutubeChannelInfo();
       channelName = channelInfo.items[0]?.snippet?.title || null;

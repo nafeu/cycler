@@ -42,6 +42,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-konva": "^17.0.2-5",
+    "react-rangeslider": "^2.2.0",
     "react-scripts": "^3.4.0",
     "react-select": "^5.2.2",
     "react-use": "^17.3.2",
@@ -56,6 +57,8 @@
     "@babel/core": "^7.14.6",
     "@babel/node": "^7.14.7",
     "@babel/preset-env": "^7.14.7",
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.29.2",
     "nodemon": "^2.0.4",
     "react-error-overlay": "6.0.9"
   },

@@ -161,13 +161,17 @@ function App() {
   const requiresLocalMedia = isYoutubeDestination || isInstagramDestination;
 
   return (
+    <div>
+      <LocalThumbnailEditor
+        setAlert={setAlert}
+      />
+    </div>
+  )
+
+  return (
     <Fragment>
       <h1 className="text-center mb-4">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
-        <LocalThumbnailEditor
-          setAlert={setAlert}
-        />
-
         <Authorizations authorizations={authorizations} />
         <MediaTypeSelector
           selectedMediaType={mediaType}
@@ -199,12 +203,20 @@ function App() {
                 />
 
                 {requiresLocalMedia && (
-                  <LocalVideoUploader
-                    onSelectVideo={handleSelectLocalMedia}
-                    payload={payload}
-                    isYoutubeDestination={isYoutubeDestination}
-                    isInstagramDestination={isInstagramDestination}
-                  />
+                  <Fragment>
+                    <LocalVideoUploader
+                      onSelectVideo={handleSelectLocalMedia}
+                      payload={payload}
+                      isYoutubeDestination={isYoutubeDestination}
+                      isInstagramDestination={isInstagramDestination}
+                    />
+
+                    {/*
+                    <LocalThumbnailEditor
+                      setAlert={setAlert}
+                    />
+                    */}
+                  </Fragment>
                 )}
 
                 {isYoutubeDestination && (

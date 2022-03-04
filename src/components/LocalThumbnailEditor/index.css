@@ -25,3 +25,12 @@
 .preview-img {
   width: 50%;
 }
+
+.editor-panel {
+  width: 15vw;
+  height: 100vh;
+  background-color: #151c20;
+  position: absolute;
+  right: 0;
+  top: 0;
+}

@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import Select from 'react-select'
 import axios from 'axios';
-import { map } from 'lodash';
+import { map, keys } from 'lodash';
 
 import './index.css';
+import 'react-rangeslider/lib/index.css'
 
 import {
   Stage,
   Layer,
   Image,
-  Rect
+  Rect,
+  Text
 } from 'react-konva';
 
 import {
@@ -20,12 +22,16 @@ import {
   Spinner
 } from 'reactstrap';
 
+import Slider from 'react-rangeslider'
+
 import useImage from 'use-image';
 
-const BackgroundImage = ({ imagePath }) => {
+const BackgroundImage = ({ imagePath, scale }) => {
   const [image] = useImage(`/api/media/preview?path=${imagePath}`);
   return <Image
     image={image}
+    scaleX={scale / 100}
+    scaleY={scale / 100}
     draggable
   />;
 }
@@ -36,6 +42,98 @@ const BackgroundFill = ({ width, height }) => <Rect
   fill="black"
 />
 
+const INITIAL_STAGE_OBJECTS = {
+  backgroundImage: {
+    scale: 100
+  }
+}
+
+const getFields = ({ object, id }) => {
+  const output = map(keys(object), key => {
+    if (key === 'scale') {
+      return {
+        id,
+        value: object[key],
+        fieldId: key,
+        type: 'range'
+      }
+    }
+
+    return {
+      id,
+      value: object[key],
+      fieldId: key,
+      type: 'text'
+    }
+  });
+
+  return output;
+}
+
+const EditorField = ({ field, stageObjects, setStageObjects }) => {
+  const { value, fieldId, id, type } = field;
+
+  const handleChange = value => {
+    const updatedStageObjects = {
+      ...stageObjects,
+      [id]: {
+        ...stageObjects[id],
+        [fieldId]: value
+      }
+    }
+
+    setStageObjects(updatedStageObjects)
+  }
+
+  if (type === 'range') {
+    return (
+      <div className="editor-field">
+        <p>{fieldId}</p>
+        <Slider
+          min={0}
+          max={100}
+          value={value}
+          onChange={handleChange}
+        />
+      </div>
+    )
+  }
+}
+
+const EditorPanel = ({ stageObjects, setStageObjects }) => {
+  const objects = map(keys(stageObjects), key => {
+    return {
+      id: key,
+      fields: getFields({ id: key, object: stageObjects[key] })
+    }
+  });
+
+  return (
+    <div className="editor-panel">
+      {objects.map(object => {
+        return (
+          <div
+            key={object.id}
+            className="editor-object"
+          >
+            <div className="editor-object-id">{object.id}</div>
+            {object.fields.map(field => {
+              return (
+                <EditorField
+                  key={field.fieldId}
+                  field={field}
+                  stageObjects={stageObjects}
+                  setStageObjects={setStageObjects}
+                />
+              );
+            })}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, setAlert }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving]   = useState(false);
@@ -44,6 +142,8 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const [stageObjects, setStageObjects] = useState(INITIAL_STAGE_OBJECTS);
 
   const stage = useRef();
 
@@ -110,6 +210,7 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
   }
 
   const handleClickEdit = () => {
+    window.scrollTo(0, 0);
     setIsEditing(true);
   }
 
@@ -175,8 +276,20 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                   {selectedImage && (
                     <BackgroundImage
                       imagePath={selectedImage}
+                      scale={stageObjects.backgroundImage.scale}
                     />
                   )}
+                  <Text
+                    x={10}
+                    y={10}
+                    text={'Example Text'}
+                    fontSize={20}
+                    // fontFamily={text.verb.font}
+                    // fontStyle={text.verb.fontStyle}
+                    // textDecoration={text.verb.fontDecoration}
+                    fill={'white'}
+                    draggable
+                  />
                 </Layer>
               </Stage>
               <Row>
@@ -189,6 +302,7 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                   </Button>
                 </Col>
               </Row>
+              <EditorPanel stageObjects={stageObjects} setStageObjects={setStageObjects} />
             </div>
           )}
         <Button
