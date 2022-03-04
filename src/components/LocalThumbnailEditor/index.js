@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Select from 'react-select'
 import axios from 'axios';
-import { map, keys } from 'lodash';
+import { map, keys, filter, includes } from 'lodash';
 
 import './index.css';
 import 'react-rangeslider/lib/index.css'
@@ -44,18 +44,49 @@ const BackgroundFill = ({ width, height }) => <Rect
 
 const INITIAL_STAGE_OBJECTS = {
   backgroundImage: {
-    scale: 100
+    scale: 100,
+    order: 0
   }
 }
 
+const META_FIELDS = ['order']
+
+const AVAILABLE_COLORS = [
+  '#ffffff',
+  '#000000',
+  '#1abc9c',
+  '#2ecc71',
+  '#3498db',
+  '#9b59b6',
+  '#f1c40f',
+  '#e67e22',
+  '#e74c3c',
+  '#ecf0f1',
+  '#95a5a6',
+  '#2c3e50'
+];
+
 const getFields = ({ object, id }) => {
-  const output = map(keys(object), key => {
+  const fieldKeys = filter(
+    keys(object), key => !includes(META_FIELDS, key)
+  );
+
+  const output = map(fieldKeys, key => {
     if (key === 'scale') {
       return {
         id,
         value: object[key],
         fieldId: key,
         type: 'range'
+      }
+    }
+
+    if (key === 'color') {
+      return {
+        id,
+        value: object[key],
+        fieldId: key,
+        type: 'color'
       }
     }
 
@@ -68,6 +99,16 @@ const getFields = ({ object, id }) => {
   });
 
   return output;
+}
+
+const getStageObjectsArray = stageObjects => {
+  return map(keys(stageObjects), key => {
+    return {
+      id: key,
+      order: stageObjects[key].order,
+      fields: getFields({ id: key, object: stageObjects[key] })
+    }
+  });
 }
 
 const EditorField = ({ field, stageObjects, setStageObjects }) => {
@@ -88,25 +129,62 @@ const EditorField = ({ field, stageObjects, setStageObjects }) => {
   if (type === 'range') {
     return (
       <div className="editor-field">
-        <p>{fieldId}</p>
         <Slider
           min={0}
-          max={100}
+          max={200}
           value={value}
           onChange={handleChange}
         />
       </div>
     )
   }
+
+  if (type === 'text') {
+    return (
+      <div className="editor-field">
+        <input
+          type="text"
+          value={value}
+          onChange={event => handleChange(event.target.value)}
+        />
+      </div>
+    )
+  }
+
+  if (type === 'color') {
+    return (
+      <div className="editor-field">
+        {AVAILABLE_COLORS.map(color => {
+          return (
+            <div
+              className="text-styler-color-item"
+              key={color}
+              style={{ backgroundColor: color }}
+              onClick={() => handleChange(color)}
+            >
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 }
 
 const EditorPanel = ({ stageObjects, setStageObjects }) => {
-  const objects = map(keys(stageObjects), key => {
-    return {
-      id: key,
-      fields: getFields({ id: key, object: stageObjects[key] })
-    }
-  });
+  const objects = getStageObjectsArray(stageObjects);
+
+  const handleClickAddText = () => {
+    const textId = filter(keys(stageObjects), key => key.includes('text_')).length + 1;
+
+    setStageObjects({
+      ...stageObjects,
+      [`text_${textId}`]: {
+        text: 'example text',
+        scale: 20,
+        color: '#FFF'
+      }
+    });
+  }
 
   return (
     <div className="editor-panel">
@@ -130,6 +208,7 @@ const EditorPanel = ({ stageObjects, setStageObjects }) => {
           </div>
         )
       })}
+      <button onClick={handleClickAddText}>Add Text</button>
     </div>
   )
 }
@@ -279,17 +358,46 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                       scale={stageObjects.backgroundImage.scale}
                     />
                   )}
-                  <Text
-                    x={10}
-                    y={10}
-                    text={'Example Text'}
-                    fontSize={20}
-                    // fontFamily={text.verb.font}
-                    // fontStyle={text.verb.fontStyle}
-                    // textDecoration={text.verb.fontDecoration}
-                    fill={'white'}
-                    draggable
-                  />
+                  {stageObjects.text_1 && (
+                    <Text
+                      x={10}
+                      y={10}
+                      text={stageObjects.text_1.text}
+                      fontSize={stageObjects.text_1.scale}
+                      fill={stageObjects.text_1.color}
+                      draggable
+                    />
+                  )}
+                  {stageObjects.text_2 && (
+                    <Text
+                      x={10}
+                      y={10}
+                      text={stageObjects.text_2.text}
+                      fontSize={stageObjects.text_2.scale}
+                      fill={stageObjects.text_2.color}
+                      draggable
+                    />
+                  )}
+                  {stageObjects.text_3 && (
+                    <Text
+                      x={10}
+                      y={10}
+                      text={stageObjects.text_3.text}
+                      fontSize={stageObjects.text_3.scale}
+                      fill={stageObjects.text_3.color}
+                      draggable
+                    />
+                  )}
+                  {stageObjects.text_4 && (
+                    <Text
+                      x={10}
+                      y={10}
+                      text={stageObjects.text_4.text}
+                      fontSize={stageObjects.text_4.scale}
+                      fill={stageObjects.text_4.color}
+                      draggable
+                    />
+                  )}
                 </Layer>
               </Stage>
               <Row>
