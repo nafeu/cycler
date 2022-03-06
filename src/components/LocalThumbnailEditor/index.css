@@ -41,3 +41,14 @@
   display: inline-block;
   cursor: pointer;
 }
+
+.text-styler-font-item, .text-styler-font-decoration-item {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 0.5em;
+}
+
+.text-styler-font-item:hover, .text-styler-font-decoration-item:hover {
+  opacity: 0.5;
+}

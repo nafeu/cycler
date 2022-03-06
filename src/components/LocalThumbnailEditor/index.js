@@ -11,7 +11,8 @@ import {
   Layer,
   Image,
   Rect,
-  Text
+  Text,
+  Group
 } from 'react-konva';
 
 import {
@@ -26,14 +27,62 @@ import Slider from 'react-rangeslider'
 
 import useImage from 'use-image';
 
-const BackgroundImage = ({ imagePath, scale }) => {
+const clipBox = (ctx, x, y, width, height, radius) => {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+};
+
+const BackgroundImage = ({ imagePath, scale, onDragStart, onDragEnd, onMouseDown }) => {
   const [image] = useImage(`/api/media/preview?path=${imagePath}`);
   return <Image
     image={image}
     scaleX={scale / 100}
     scaleY={scale / 100}
+    onDragStart={onDragStart}
+    onDragEnd={onDragEnd}
+    onMouseDown={onMouseDown}
     draggable
   />;
+}
+
+const PastedImage = ({ dataUrl, scale, borderRadius, onDragStart, onDragEnd, onMouseDown }) => {
+  const [image] = useImage(dataUrl);
+
+  if (image) {
+    return (
+      <Group
+        clipFunc={ctx => {
+          clipBox(
+            ctx,
+            0,
+            0,
+            image.width,
+            image.height,
+            borderRadius
+          );
+        }}
+        scaleX={scale / 100}
+        scaleY={scale / 100}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onMouseDown={onMouseDown}
+        draggable
+      >
+        <Image image={image} />
+      </Group>
+    );
+  }
+
+  return <Text />
 }
 
 const BackgroundFill = ({ width, height }) => <Rect
@@ -44,12 +93,13 @@ const BackgroundFill = ({ width, height }) => <Rect
 
 const INITIAL_STAGE_OBJECTS = {
   backgroundImage: {
+    scale: 100
+  },
+  pastedImage: {
     scale: 100,
-    order: 0
+    borderRadius: 0
   }
 }
-
-const META_FIELDS = ['order']
 
 const AVAILABLE_COLORS = [
   '#ffffff',
@@ -66,13 +116,35 @@ const AVAILABLE_COLORS = [
   '#2c3e50'
 ];
 
+const AVAILABLE_FONTS = [
+  'Roboto Mono',
+  'RobotoMono-Thin',
+  'RobotoMono-Light',
+  'RobotoMono-Medium',
+  'RobotoMono-Regular',
+  'RobotoMono-Bold'
+];
+
+const AVAILABLE_FONT_DECORATIONS = [
+  '',
+  'line-through',
+  'underline'
+];
+
 const getFields = ({ object, id }) => {
-  const fieldKeys = filter(
-    keys(object), key => !includes(META_FIELDS, key)
-  );
+  const fieldKeys = keys(object);
 
   const output = map(fieldKeys, key => {
     if (key === 'scale') {
+      return {
+        id,
+        value: object[key],
+        fieldId: key,
+        type: 'range'
+      }
+    }
+
+    if (key === 'borderRadius') {
       return {
         id,
         value: object[key],
@@ -87,6 +159,24 @@ const getFields = ({ object, id }) => {
         value: object[key],
         fieldId: key,
         type: 'color'
+      }
+    }
+
+    if (key === 'font') {
+      return {
+        id,
+        value: object[key],
+        fieldId: key,
+        type: 'font'
+      }
+    }
+
+    if (key === 'decoration') {
+      return {
+        id,
+        value: object[key],
+        fieldId: key,
+        type: 'decoration'
       }
     }
 
@@ -105,7 +195,6 @@ const getStageObjectsArray = stageObjects => {
   return map(keys(stageObjects), key => {
     return {
       id: key,
-      order: stageObjects[key].order,
       fields: getFields({ id: key, object: stageObjects[key] })
     }
   });
@@ -168,9 +257,53 @@ const EditorField = ({ field, stageObjects, setStageObjects }) => {
       </div>
     )
   }
+
+  if (type === 'font') {
+    return (
+      <div className="editor-field">
+        {AVAILABLE_FONTS.map(font => {
+          return (
+            <div
+              className="text-styler-font-item"
+              key={font}
+              style={{ fontFamily: font }}
+              onClick={() => handleChange(font)}
+            >
+              AaBbCc
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  if (type === 'decoration') {
+    return (
+      <div className="editor-field">
+        {AVAILABLE_FONT_DECORATIONS.map(decoration => {
+          if (decoration === '') {
+            return <div
+              className="text-styler-font-decoration-item"
+              key={'none'}
+              onClick={() => handleChange(decoration)}
+            >
+              none
+            </div>
+          }
+          return <div
+            className="text-styler-font-decoration-item"
+            key={decoration}
+            onClick={() => handleChange(decoration)}
+          >
+            {decoration}
+          </div>
+        })}
+      </div>
+    )
+  }
 }
 
-const EditorPanel = ({ stageObjects, setStageObjects }) => {
+const EditorPanel = ({ stageObjects, setStageObjects, onPasteImage }) => {
   const objects = getStageObjectsArray(stageObjects);
 
   const handleClickAddText = () => {
@@ -181,7 +314,9 @@ const EditorPanel = ({ stageObjects, setStageObjects }) => {
       [`text_${textId}`]: {
         text: 'example text',
         scale: 20,
-        color: '#FFF'
+        color: '#FFF',
+        font: AVAILABLE_FONTS[0],
+        decoration: AVAILABLE_FONT_DECORATIONS[0]
       }
     });
   }
@@ -208,7 +343,10 @@ const EditorPanel = ({ stageObjects, setStageObjects }) => {
           </div>
         )
       })}
-      <button onClick={handleClickAddText}>Add Text</button>
+      {filter(objects, ({ id }) => id.includes('text_')).length < 4 && (
+        <button onClick={handleClickAddText}>Add Text</button>
+      )}
+      <input type="text" onPaste={onPasteImage} placeholder="paste image here"/>
     </div>
   )
 }
@@ -221,8 +359,10 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(null);
+  const [pastedImage, setPastedImage] = useState(null);
 
-  const [stageObjects, setStageObjects] = useState(INITIAL_STAGE_OBJECTS);
+  const [stageObjects, setStageObjects]     = useState(INITIAL_STAGE_OBJECTS);
+  const [selectedObject, setSelectedObject] = useState(null);
 
   const stage = useRef();
 
@@ -297,6 +437,43 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
     setIsEditing(false);
   }
 
+  const handleMouseDown = id => {
+    setSelectedObject(id);
+  }
+
+  const handleDragStart = event => {}
+  const handleDragEnd = event => {}
+
+  const handleWheel = ({ evt: { shiftKey, wheelDelta } }) => {
+    if (shiftKey) {
+      const delta = wheelDelta > 0 ? 5 : -5;
+
+      const updatedStageObjects = {
+        ...stageObjects,
+        [selectedObject]: {
+          ...stageObjects[selectedObject],
+          scale: stageObjects[selectedObject].scale + delta
+        }
+      }
+
+      setStageObjects(updatedStageObjects)
+    }
+  }
+
+  const handlePasteImage = pasteEvent => {
+    const items = pasteEvent.clipboardData.items;
+
+    const blob = items[0].getAsFile();
+    const reader = new FileReader();
+
+    reader.onload = loadEvent => {
+      setPastedImage(loadEvent.target.result);
+    };
+
+    reader.readAsDataURL(blob);
+  }
+
+
   return (
     <Row className="mb-3">
       <Col>
@@ -340,22 +517,38 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
           </Row>
         )}
           {isEditing && (
-            <div className="konva-container">
+            <div
+              className="konva-container"
+            >
               <Stage
                 width={1280}
                 height={720}
                 ref={stage}
                 className="konva-stage mb-3"
+                onWheel={handleWheel}
               >
                 <Layer>
                   <BackgroundFill
-                    width={1280}
-                    height={720}
+                    width={2000}
+                    height={2000}
                   />
                   {selectedImage && (
                     <BackgroundImage
                       imagePath={selectedImage}
                       scale={stageObjects.backgroundImage.scale}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onMouseDown={() => handleMouseDown('backgroundImage')}
+                    />
+                  )}
+                  {pastedImage && (
+                    <PastedImage
+                      dataUrl={pastedImage}
+                      scale={stageObjects.pastedImage.scale}
+                      borderRadius={stageObjects.pastedImage.borderRadius}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onMouseDown={() => handleMouseDown('pastedImage')}
                     />
                   )}
                   {stageObjects.text_1 && (
@@ -364,7 +557,12 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                       y={10}
                       text={stageObjects.text_1.text}
                       fontSize={stageObjects.text_1.scale}
+                      fontFamily={stageObjects.text_1.font}
+                      textDecoration={stageObjects.text_1.decoration}
                       fill={stageObjects.text_1.color}
+                      onMouseDown={() => handleMouseDown('text_1')}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
                       draggable
                     />
                   )}
@@ -374,7 +572,12 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                       y={10}
                       text={stageObjects.text_2.text}
                       fontSize={stageObjects.text_2.scale}
+                      fontFamily={stageObjects.text_2.font}
+                      textDecoration={stageObjects.text_2.decoration}
                       fill={stageObjects.text_2.color}
+                      onMouseDown={() => handleMouseDown('text_2')}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
                       draggable
                     />
                   )}
@@ -384,7 +587,12 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                       y={10}
                       text={stageObjects.text_3.text}
                       fontSize={stageObjects.text_3.scale}
+                      fontFamily={stageObjects.text_3.font}
+                      textDecoration={stageObjects.text_3.decoration}
                       fill={stageObjects.text_3.color}
+                      onMouseDown={() => handleMouseDown('text_3')}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
                       draggable
                     />
                   )}
@@ -394,7 +602,12 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                       y={10}
                       text={stageObjects.text_4.text}
                       fontSize={stageObjects.text_4.scale}
+                      fontFamily={stageObjects.text_4.font}
+                      textDecoration={stageObjects.text_4.decoration}
                       fill={stageObjects.text_4.color}
+                      onMouseDown={() => handleMouseDown('text_4')}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
                       draggable
                     />
                   )}
@@ -410,7 +623,11 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
                   </Button>
                 </Col>
               </Row>
-              <EditorPanel stageObjects={stageObjects} setStageObjects={setStageObjects} />
+              <EditorPanel
+                stageObjects={stageObjects}
+                setStageObjects={setStageObjects}
+                onPasteImage={handlePasteImage}
+              />
             </div>
           )}
         <Button
