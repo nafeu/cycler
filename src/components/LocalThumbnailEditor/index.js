@@ -477,7 +477,7 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Edit Thumbnail For Upload</h4>
+        <h4>Edit Thumbnail</h4>
         {(true || isInstagramDestination || isYoutubeDestination) && (
           <List type="unstyled">
             <ul>

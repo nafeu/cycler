@@ -1,4 +1,5 @@
 import { filter, find } from 'lodash';
+import { DEFAULT_YOUTUBE_FIELDS, YOUTUBE_STRATEGY_ID } from './constants';
 
 export const getStrategiesDefault = ({ destination, strategies }) => {
   const existingStrategy = find(strategies, { id: destination })
@@ -7,7 +8,16 @@ export const getStrategiesDefault = ({ destination, strategies }) => {
     return filter(strategies, ({ id }) => id !== destination);
   }
 
-  return [...strategies, { id: destination, fields: {} }]
+  let fields = {}
+
+  if (destination === YOUTUBE_STRATEGY_ID) {
+    fields = {
+      ...fields,
+      ...DEFAULT_YOUTUBE_FIELDS
+    }
+  }
+
+  return [...strategies, { id: destination, fields }]
 }
 
 export const getStrategyFieldValue = ({ payload, strategyId, fieldId }) => {

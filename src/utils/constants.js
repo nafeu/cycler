@@ -1,12 +1,16 @@
+export const MEDIA_TYPE_VIDEO = 'video';
+export const MEDIA_TYPE_IMAGE = 'image';
+
 export const DEFAULT_PAYLOAD = {
-  mediaType: null,
+  mediaType: MEDIA_TYPE_VIDEO,
   destinations: [],
   strategies: [],
   file: {}
 }
 
-export const MEDIA_TYPE_VIDEO = 'video';
-export const MEDIA_TYPE_IMAGE = 'image';
+export const DEFAULT_YOUTUBE_FIELDS = {
+  description: 'Follow me on https://twitch.tv/phrakturemusic for music production streams!\n\nLike and subscribe for more!\n\n---\nStay Updated\nInstagram: https://instagram.com/phrakture\nTwitch: https://twitch.tv/phrakturemusic\nTwitter: https://twitter.com/phrakturemusic\n\nSupport My Work\nSpotify: https://open.spotify.com/artist/4AlnXoFGT5zl3v85ScIOzK?si=22xhtuLNSROYPdpVvuUglQ\nBandcamp: https://phrakture.bandcamp.com\n\nGet In Touch: nafeu.nasir@gmail.com'
+}
 
 export const VALID_MEDIA_TYPES = [MEDIA_TYPE_VIDEO, MEDIA_TYPE_IMAGE];
 

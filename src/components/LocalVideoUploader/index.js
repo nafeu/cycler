@@ -72,7 +72,7 @@ const LocalVideoUploader = ({ onSelectVideo, payload, isInstagramDestination, is
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Select Video For Upload</h4>
+        <h4>Select Video To Upload</h4>
         {(isInstagramDestination || isYoutubeDestination) && (
           <List type="unstyled">
             <ul>

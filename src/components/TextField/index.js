@@ -15,7 +15,8 @@ const TextField = ({
   fieldValue,
   strategyId,
   multiline,
-  maxLength
+  maxLength,
+  defaultValue
 }) => {
   const handleChangeText = event => {
     onChangeText({
@@ -34,6 +35,9 @@ const TextField = ({
         <Input
           placeholder={placeholder}
           type={multiline ? "textarea" : "text"}
+          styles={{ whiteSpace: 'pre-wrap' }}
+          rows={multiline && 17}
+          defaultValue={defaultValue}
           onChange={handleChangeText}
           value={fieldValue}
           maxLength={maxLength}

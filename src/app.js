@@ -165,10 +165,12 @@ function App() {
       <h1 className="text-center mb-4">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
         <Authorizations authorizations={authorizations} />
+        {/*
         <MediaTypeSelector
           selectedMediaType={mediaType}
           onSelectMediaType={handleSelectMediaType}
         />
+        */}
 
         {isValidMediaType && (
           <Fragment>

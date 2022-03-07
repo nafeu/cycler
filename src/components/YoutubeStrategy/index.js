@@ -11,7 +11,7 @@ import TextField from '../TextField';
 // import CheckboxField from '../CheckboxField';
 
 import { getStrategyFieldValue } from '../../utils/helpers';
-import { YOUTUBE_STRATEGY_ID, YOUTUBE_VIDEO_CATEGORIES } from '../../utils/constants';
+import { YOUTUBE_STRATEGY_ID, YOUTUBE_VIDEO_CATEGORIES, DEFAULT_YOUTUBE_FIELDS } from '../../utils/constants';
 
 const YoutubeStrategy = ({ onChangeField, payload }) => {
   const strategyId = YOUTUBE_STRATEGY_ID;
@@ -40,6 +40,7 @@ const YoutubeStrategy = ({ onChangeField, payload }) => {
             fieldValue={
               getStrategyFieldValue({ payload, strategyId, fieldId: "description" })
             }
+            defaultValue={DEFAULT_YOUTUBE_FIELDS.description}
             onChangeText={onChangeField}
             multiline
           />

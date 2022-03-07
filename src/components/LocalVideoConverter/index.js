@@ -48,7 +48,7 @@ const LocalVideoConverter = ({ onSelectVideo, onClickConvert, isConverting }) =>
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Convert Media For Upload</h4>
+        <h4>Convert Video</h4>
         <Row>
           <Col>
             <Select
