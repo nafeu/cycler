@@ -6,7 +6,7 @@ import { filter, map, includes } from 'lodash';
 import getVideoDimensions from 'get-video-dimensions';
 
 import { executeShellCommandAsync, getFileInfoFromFolder } from '../../../services/shell';
-import { saveImageAsJpgAsync } from '../../../services/image';
+import { saveImageAsJpgAsync, saveThumbnails } from '../../../services/image';
 
 import { MEDIA_DIRECTORY, INVALID_EXTENSIONS } from '../../../constants';
 
@@ -87,8 +87,15 @@ export const postMediaConvert = async (req, res, next) => {
 
 export const postMediaSave = async (req, res, next) => {
   try {
-    const { path } = req.body;
-    const result = await saveImageAsJpgAsync(path);
+    const { path, isThumbnailExport } = req.body;
+
+    let result;
+
+    if (isThumbnailExport) {
+      result = await await saveThumbnails();
+    } else {
+      result = await saveImageAsJpgAsync(path);
+    }
 
     res.json({ result });
   } catch (error) {
@@ -100,7 +107,7 @@ export const getMediaThumbs = async (req, res, next) => {
   try {
     const { path } = req.query;
 
-    if (fsSync.existsSync(`${MEDIA_DIRECTORY}/generated_thumbnail_1.jpg`)) {
+    if (fsSync.existsSync(`${MEDIA_DIRECTORY}/generated_thumbnail_001.jpg`)) {
       await executeShellCommandAsync(
         `cd media && rm generated_thumbnail_*.jpg`
       );

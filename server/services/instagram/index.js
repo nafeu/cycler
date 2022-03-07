@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import { IgApiClient } from 'instagram-private-api';
+import { MEDIA_DIRECTORY } from '../../constants';
 
 const getAuthorizedInstagramClient = async () => {
   const client = new IgApiClient();
@@ -13,7 +14,7 @@ export const uploadInstagramVideo = async ({ caption, videoPath, /* coverPath */
   try {
     const instagramClient = await getAuthorizedInstagramClient();
     const video = await fs.readFile(videoPath)
-    const coverImage = await fs.readFile(`${videoPath.split('.')[0]}.jpg`)
+    const coverImage = await fs.readFile(`${MEDIA_DIRECTORY}/thumbnail-export-instagram.jpg`)
 
     const result = await instagramClient.publish.video({
       video,

@@ -161,14 +161,6 @@ function App() {
   const requiresLocalMedia = isYoutubeDestination || isInstagramDestination;
 
   return (
-    <div>
-      <LocalThumbnailEditor
-        setAlert={setAlert}
-      />
-    </div>
-  )
-
-  return (
     <Fragment>
       <h1 className="text-center mb-4">Cycler<span className="thin"> Multimedia Crossposting</span></h1>
       <AppContainer>
@@ -211,11 +203,9 @@ function App() {
                       isInstagramDestination={isInstagramDestination}
                     />
 
-                    {/*
                     <LocalThumbnailEditor
                       setAlert={setAlert}
                     />
-                    */}
                   </Fragment>
                 )}
 

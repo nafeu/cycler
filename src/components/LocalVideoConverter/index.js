@@ -22,7 +22,7 @@ const LocalVideoConverter = ({ onSelectVideo, onClickConvert, isConverting }) =>
       try {
         setIsLoading(true);
         setIsError(false);
-        const { data } = await axios.get('/api/media?omit=mp4');
+        const { data } = await axios.get('/api/media?omit=mp4,jpg');
 
         setAllMedia(
           map(data.allMedia, ({ path, name, size, dimensions }) => {

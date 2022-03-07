@@ -3,11 +3,10 @@ import { google } from 'googleapis';
 
 const OAuth2 = google.auth.OAuth2;
 
-import { TOKEN_PATH } from '../../constants';
+import { TOKEN_PATH, MEDIA_DIRECTORY } from '../../constants';
 
 const setVideoThumbnailAsync = ({
   videoId,
-  thumbnailPath,
   auth
 }) => new Promise((resolve, reject) => {
   const service = google.youtube('v3');
@@ -16,7 +15,7 @@ const setVideoThumbnailAsync = ({
     auth,
     videoId,
     media: {
-      body: fsSync.createReadStream(thumbFilePath)
+      body: fsSync.createReadStream(`${MEDIA_DIRECTORY}/thumbnail-export-youtube.jpg`)
     },
   }, function(error, response) {
     if (error) {
@@ -89,17 +88,10 @@ export const uploadYoutubeVideo = async ({ title, description, tags, videoPath, 
   try {
     const auth = await getAuthorizedOauth2Client();
 
-    const { data: uploadVideoResponse } = await uploadYoutubeVideoAsync({ title, description, tags, videoPath, auth, categoryId });
+    const { data: uploadVideoResponse }  = await uploadYoutubeVideoAsync({ title, description, tags, videoPath, auth, categoryId });
+    const { data: setThumbnailResponse } = await setVideoThumbnailAsync({ videoId: uploadVideoResponse.id, auth });
 
-    /*
-      if (thumbnail) {
-        const { data: setThumbnailResponse } = await setVideoThumbnailAsync({ videoId: uploadVideoResponse.id, thumbnailPath, auth });
-      }
-
-      return { uploadVideoResponse, setThumbnailResponse }
-    */
-
-    return uploadVideoResponse;
+    return { uploadVideoResponse, setThumbnailResponse }
   } catch (error) {
     console.log(error);
     return { error }

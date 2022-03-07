@@ -413,6 +413,7 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
       const formData = new FormData();
       formData.append('file', file);
       formData.append('path', selectedImage);
+      formData.append('isThumbnailExport', true);
 
       await axios({
         method: "post",
@@ -473,11 +474,10 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
     reader.readAsDataURL(blob);
   }
 
-
   return (
     <Row className="mb-3">
       <Col>
-        <h4>Select Thumbnail To Edit</h4>
+        <h4>Edit Thumbnail For Upload</h4>
         {(true || isInstagramDestination || isYoutubeDestination) && (
           <List type="unstyled">
             <ul>
@@ -516,134 +516,134 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
             </Col>
           </Row>
         )}
-          {isEditing && (
-            <div
-              className="konva-container"
+        {isEditing && (
+          <div
+            className="konva-container"
+          >
+            <Stage
+              width={1280}
+              height={720}
+              ref={stage}
+              className="konva-stage mb-3"
+              onWheel={handleWheel}
             >
-              <Stage
-                width={1280}
-                height={720}
-                ref={stage}
-                className="konva-stage mb-3"
-                onWheel={handleWheel}
-              >
-                <Layer>
-                  <BackgroundFill
-                    width={2000}
-                    height={2000}
+              <Layer>
+                <BackgroundFill
+                  width={2000}
+                  height={2000}
+                />
+                {selectedImage && (
+                  <BackgroundImage
+                    imagePath={selectedImage}
+                    scale={stageObjects.backgroundImage.scale}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onMouseDown={() => handleMouseDown('backgroundImage')}
                   />
-                  {selectedImage && (
-                    <BackgroundImage
-                      imagePath={selectedImage}
-                      scale={stageObjects.backgroundImage.scale}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                      onMouseDown={() => handleMouseDown('backgroundImage')}
-                    />
-                  )}
-                  {pastedImage && (
-                    <PastedImage
-                      dataUrl={pastedImage}
-                      scale={stageObjects.pastedImage.scale}
-                      borderRadius={stageObjects.pastedImage.borderRadius}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                      onMouseDown={() => handleMouseDown('pastedImage')}
-                    />
-                  )}
-                  {stageObjects.text_1 && (
-                    <Text
-                      x={10}
-                      y={10}
-                      text={stageObjects.text_1.text}
-                      fontSize={stageObjects.text_1.scale}
-                      fontFamily={stageObjects.text_1.font}
-                      textDecoration={stageObjects.text_1.decoration}
-                      fill={stageObjects.text_1.color}
-                      onMouseDown={() => handleMouseDown('text_1')}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                      draggable
-                    />
-                  )}
-                  {stageObjects.text_2 && (
-                    <Text
-                      x={10}
-                      y={10}
-                      text={stageObjects.text_2.text}
-                      fontSize={stageObjects.text_2.scale}
-                      fontFamily={stageObjects.text_2.font}
-                      textDecoration={stageObjects.text_2.decoration}
-                      fill={stageObjects.text_2.color}
-                      onMouseDown={() => handleMouseDown('text_2')}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                      draggable
-                    />
-                  )}
-                  {stageObjects.text_3 && (
-                    <Text
-                      x={10}
-                      y={10}
-                      text={stageObjects.text_3.text}
-                      fontSize={stageObjects.text_3.scale}
-                      fontFamily={stageObjects.text_3.font}
-                      textDecoration={stageObjects.text_3.decoration}
-                      fill={stageObjects.text_3.color}
-                      onMouseDown={() => handleMouseDown('text_3')}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                      draggable
-                    />
-                  )}
-                  {stageObjects.text_4 && (
-                    <Text
-                      x={10}
-                      y={10}
-                      text={stageObjects.text_4.text}
-                      fontSize={stageObjects.text_4.scale}
-                      fontFamily={stageObjects.text_4.font}
-                      textDecoration={stageObjects.text_4.decoration}
-                      fill={stageObjects.text_4.color}
-                      onMouseDown={() => handleMouseDown('text_4')}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                      draggable
-                    />
-                  )}
-                </Layer>
-              </Stage>
-              <Row>
-                <Col>
-                  <Button
-                    color="primary"
-                    onClick={handleClickDone}
-                  >
-                    Done
-                  </Button>
-                </Col>
-              </Row>
-              <EditorPanel
-                stageObjects={stageObjects}
-                setStageObjects={setStageObjects}
-                onPasteImage={handlePasteImage}
-              />
-            </div>
-          )}
-        <Button
-          color="primary"
-          disabled={isSaving}
-          onClick={handleClickSave}
-        >
-          {
-            isSaving ? (
-              <Spinner size="sm">
-                {''}
-              </Spinner>
-            ) : 'Save'
-          }
-        </Button>
-        {' '}
+                )}
+                {pastedImage && (
+                  <PastedImage
+                    dataUrl={pastedImage}
+                    scale={stageObjects.pastedImage.scale}
+                    borderRadius={stageObjects.pastedImage.borderRadius}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onMouseDown={() => handleMouseDown('pastedImage')}
+                  />
+                )}
+                {stageObjects.text_1 && (
+                  <Text
+                    x={10}
+                    y={10}
+                    text={stageObjects.text_1.text}
+                    fontSize={stageObjects.text_1.scale}
+                    fontFamily={stageObjects.text_1.font}
+                    textDecoration={stageObjects.text_1.decoration}
+                    fill={stageObjects.text_1.color}
+                    onMouseDown={() => handleMouseDown('text_1')}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    draggable
+                  />
+                )}
+                {stageObjects.text_2 && (
+                  <Text
+                    x={10}
+                    y={10}
+                    text={stageObjects.text_2.text}
+                    fontSize={stageObjects.text_2.scale}
+                    fontFamily={stageObjects.text_2.font}
+                    textDecoration={stageObjects.text_2.decoration}
+                    fill={stageObjects.text_2.color}
+                    onMouseDown={() => handleMouseDown('text_2')}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    draggable
+                  />
+                )}
+                {stageObjects.text_3 && (
+                  <Text
+                    x={10}
+                    y={10}
+                    text={stageObjects.text_3.text}
+                    fontSize={stageObjects.text_3.scale}
+                    fontFamily={stageObjects.text_3.font}
+                    textDecoration={stageObjects.text_3.decoration}
+                    fill={stageObjects.text_3.color}
+                    onMouseDown={() => handleMouseDown('text_3')}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    draggable
+                  />
+                )}
+                {stageObjects.text_4 && (
+                  <Text
+                    x={10}
+                    y={10}
+                    text={stageObjects.text_4.text}
+                    fontSize={stageObjects.text_4.scale}
+                    fontFamily={stageObjects.text_4.font}
+                    textDecoration={stageObjects.text_4.decoration}
+                    fill={stageObjects.text_4.color}
+                    onMouseDown={() => handleMouseDown('text_4')}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    draggable
+                  />
+                )}
+              </Layer>
+            </Stage>
+            <Row>
+              <Col>
+                <Button
+                  color="primary"
+                  disabled={isSaving}
+                  onClick={handleClickSave}
+                >
+                  {
+                    isSaving ? (
+                      <Spinner size="sm">
+                        {''}
+                      </Spinner>
+                    ) : 'Save'
+                  }
+                </Button>
+                {' '}
+                <Button
+                  color="primary"
+                  onClick={handleClickDone}
+                >
+                  Done
+                </Button>
+              </Col>
+            </Row>
+            <EditorPanel
+              stageObjects={stageObjects}
+              setStageObjects={setStageObjects}
+              onPasteImage={handlePasteImage}
+            />
+          </div>
+        )}
         {selectedImage && (
           <Button
             color="primary"
