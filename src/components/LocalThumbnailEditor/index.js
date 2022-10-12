@@ -521,8 +521,8 @@ const LocalThumbnailEditor = ({ isInstagramDestination, isYoutubeDestination, se
             className="konva-container"
           >
             <Stage
-              width={1280}
-              height={720}
+              width={1080}
+              height={1080}
               ref={stage}
               className="konva-stage mb-3"
               onWheel={handleWheel}
